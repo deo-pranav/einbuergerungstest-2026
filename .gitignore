@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs & temporary distributions
+www/
+dist/
+
+# Android build artifacts
+android/.gradle/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+android/.idea/
+android/*.iml
+android/app/*.iml
+local.properties
+.gradle/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Intermediate extraction data (reproducible via tools scripts)
+tools/kat.txt
+tools/ds_*.json
+tools/key_raw.json
+tools/pdf_parsed.json
+tools/tmp_crop/
+tools/app_icon.svg

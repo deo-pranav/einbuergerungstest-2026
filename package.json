@@ -1,0 +1,22 @@
+{
+  "name": "einbuergerungstest-2026",
+  "version": "2026.1.0",
+  "description": "Standalone German Citizenship Test App (300 Nationwide + 160 State Questions in DE/EN/HI)",
+  "scripts": {
+    "build:web": "python3 tools/build_web_dist.py",
+    "sync:android": "python3 tools/build_web_dist.py && npx cap sync android",
+    "build:apk": "npm run sync:android && cd android && ./gradlew assembleDebug",
+    "build:bundle": "npm run sync:android && cd android && ./gradlew bundleRelease",
+    "open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/app": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/haptics": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0"
+  },
+  "devDependencies": {},
+  "private": true
+}

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Einbürgerungstest 2026 — Alle 16 Bundesländer (460 Fragen)</title>
+  
+  <meta name="theme-color" content="#0066b3">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="flagstripe"></div>
+  
+  <header>
+    <div class="wrap">
+      <div class="top-bar">
+        <div class="app-title">
+          <h1>🇩🇪 Einbürgerungstest 2026</h1>
+          <p>Alle 300 bundesweiten Fragen + 160 Landesfragen (BAMF-Katalog)</p>
+        </div>
+
+        <div class="header-controls">
+          <!-- State Selector -->
+          <select id="state-select" class="ctrl-select" title="Bundesland auswählen" aria-label="Bundesland auswählen">
+            <!-- Populated by JS -->
+          </select>
+
+          <!-- Translation Switcher -->
+          <div class="lang-switcher" role="group" aria-label="Übersetzungssprache">
+            <button class="lang-btn" data-lang="de" title="Nur Deutsch (Prüfungsmodus)">DE</button>
+            <button class="lang-btn" data-lang="en" title="Deutsch + English">+ EN</button>
+            <button class="lang-btn" data-lang="hi" title="Deutsch + हिन्दी">+ HI</button>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="ctrl-btn" id="theme-btn" title="Farbschema umschalten" aria-label="Farbschema umschalten">
+            <span id="theme-icon">☀️</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="tabs" role="tablist">
+        <button role="tab" aria-selected="true"  data-view="exam">Prüfung simulieren</button>
+        <button role="tab" aria-selected="false" data-view="practice">Üben</button>
+        <button role="tab" aria-selected="false" data-view="all">Alle 460 Fragen</button>
+        <button role="tab" aria-selected="false" data-view="info">Über den Test</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- ===== TAB 1: EXAM SIMULATION ===== -->
+    <section id="view-exam">
+      <div class="card picker" id="exam-intro"></div>
+      <div id="exam-run" hidden>
+        <div class="progress">
+          <button class="ctrl-btn" id="ex-exit-btn" style="padding:2px 8px;font-size:0.8rem;margin-right:2px;" title="Prüfung beenden">← Beenden</button>
+          <span id="ex-count"></span>
+          <span class="bar"><i id="ex-bar" style="width:0%"></i></span>
+          <span class="timer" id="ex-timer"></span>
+          <span id="ex-score"></span>
+        </div>
+        <div class="card" id="exam-card"></div>
+      </div>
+    </section>
+
+    <!-- ===== TAB 2: PRACTICE HUB ===== -->
+    <section id="view-practice" hidden>
+      <div class="card picker" id="picker"></div>
+      <div id="prac-run" hidden>
+        <div class="progress">
+          <button class="ctrl-btn" id="pr-exit-btn" style="padding:2px 8px;font-size:0.8rem;margin-right:2px;" title="Übung beenden und zurück zur Übersicht">← Beenden</button>
+          <span id="pr-count"></span>
+          <span class="bar"><i id="pr-bar" style="width:0%"></i></span>
+          <span id="pr-score"></span>
+        </div>
+        <div class="card" id="prac-card"></div>
+      </div>
+    </section>
+
+    <!-- ===== TAB 3: ALL 460 QUESTIONS TABLE ===== -->
+    <section id="view-all" hidden>
+      <div class="card">
+        <div class="toolbar">
+          <input type="search" id="q-search" placeholder="Suchen in Fragen, Antworten und Übersetzungen …">
+          <select id="q-filter-pool">
+            <option value="all">Alle 460 Fragen (Bundesweit + 16 Länder)</option>
+            <option value="allgemein">Nur die 300 bundesweiten Fragen</option>
+            <option value="state-current">Nur mein Bundesland (10 Fragen)</option>
+            <optgroup label="Einzelne Bundesländer (je 10)" id="q-filter-states"></optgroup>
+          </select>
+        </div>
+        <table class="all">
+          <thead><tr><th>Nr.</th><th>Frage</th><th>Richtige Antwort</th></tr></thead>
+          <tbody id="alltbody"></tbody>
+        </table>
+        <p class="footnote" id="all-count" style="margin-top:14px;color:var(--muted)"></p>
+      </div>
+    </section>
+
+    <!-- ===== TAB 4: INFO / ABOUT ===== -->
+    <section id="view-info" hidden>
+      <div class="card info">
+        <dl>
+          <dt>Wie ist der Einbürgerungstest aufgebaut?<div class="table-sub">How is the citizenship test structured?</div></dt>
+          <dd>33 Multiple-Choice-Fragen in 60 Minuten: <strong>30 bundesweite</strong> Fragen und
+              <strong>3 Fragen zu Ihrem Bundesland</strong>. Jede Frage hat genau eine richtige
+              Antwort von vier.
+              <div class="table-sub">33 multiple-choice questions in 60 minutes: 30 nationwide + 3 state-specific questions.</div></dd>
+
+          <dt>Wie viele Antworten muss ich richtig haben?<div class="table-sub">How many correct answers do I need?</div></dt>
+          <dd>Mindestens <strong>17 von 33</strong>. Der Test kostet 25&nbsp;€ und kann beliebig oft
+              wiederholt werden.
+              <div class="table-sub">At least 17 out of 33 correct. Pass rate: ~52%.</div></dd>
+
+          <dt>Woher kommen die 3 Landesfragen?<div class="table-sub">Where do the 3 state questions come from?</div></dt>
+          <dd>Aus einem Pool von 10 Fragen pro Bundesland (insgesamt 160 für alle 16 Länder). In dieser
+              App können Sie oben rechts Ihr Bundesland auswählen, um genau Ihre 10 Landesfragen zu üben.
+              <div class="table-sub">From a pool of 10 questions per federal state (160 total across all 16 states).</div></dd>
+
+          <dt>Wie lauten die Katalognummern?<div class="table-sub">What are the catalogue numbers?</div></dt>
+          <dd>1–300: Bundesweite Fragen. 301–460: Landesfragen in alphabetischer Reihenfolge
+              (Baden-Württemberg 301–310, Bayern 311–320, Berlin 321–330 … Thüringen 451–460).
+              <div class="table-sub">1–300 nationwide, followed by 10 per state alphabetically.</div></dd>
+
+          <dt>Sind alle Übersetzungen enthalten?<div class="table-sub">Are translations included?</div></dt>
+          <dd>Ja! Alle 460 Fragen und 1.840 Antwortoptionen sind vollständig auf <strong>Deutsch</strong>,
+              <strong>Englisch</strong> und <strong>Hindi</strong> verfügbar und können per Klick umgeschaltet werden.
+              <div class="table-sub">All 460 questions are fully available in German, English, and Hindi.</div></dd>
+
+          <dt>Funktioniert diese App 100% offline?<div class="table-sub">Does this app work offline?</div></dt>
+          <dd>Ja. Alle Daten, Bilder und Funktionen sind lokal gespeichert. Keine Serveranbindung,
+              kein Tracking, vollständiger Datenschutz.
+              <div class="table-sub">100% offline, zero server tracking, zero database required.</div></dd>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    Amtliche Quelle: <a href="https://oet.bamf.de/ords/oetut/f?p=514:1" target="_blank">BAMF Fragenkatalog</a> ·
+    Stand 2025/2026 · Privates Lernprojekt.
+  </footer>
+
+  <!-- Scripts: Data Layer + Application Modules -->
+  <script src="data/questions_all.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/views/exam.js"></script>
+  <script src="js/views/practice.js"></script>
+  <script src="js/views/table.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

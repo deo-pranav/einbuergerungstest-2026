@@ -1,0 +1,58 @@
+/* ================================================================== *
+ * View: All 460 Questions Table & Search Explorer
+ * ================================================================== */
+
+function renderTable() {
+  const tbodyEl = el("alltbody");
+  if (!tbodyEl) return;
+
+  const searchEl = el("q-search");
+  const poolEl = el("q-filter-pool");
+  const countEl = el("all-count");
+
+  const term = (searchEl ? searchEl.value : "").trim().toLowerCase();
+  const filterPool = poolEl ? poolEl.value : "all";
+
+  const rows = ALL_QS.filter(q => {
+    if (filterPool === "allgemein" && q.state !== null) return false;
+    if (filterPool === "state-current" && q.state !== AppState.stateCode) return false;
+    if (filterPool.startsWith("state-") && filterPool !== "state-current") {
+      const code = filterPool.replace("state-", "");
+      if (q.state !== code) return false;
+    }
+
+    if (!term) return true;
+
+    const c = q.options[q.correct];
+    const searchTarget = [
+      q.id,
+      q.q.de, q.q.en, q.q.hi,
+      ...q.options.map(o => `${o.de} ${o.en} ${o.hi}`),
+      c.de, c.en, c.hi
+    ].join(" ").toLowerCase();
+
+    return searchTarget.includes(term);
+  });
+
+  tbodyEl.innerHTML = rows.length ? rows.map(q => {
+    const c = q.options[q.correct];
+    const qSub = resolveSubText(q.q);
+    const cSub = resolveSubText(c);
+    return `<tr>
+      <td class="n">${q.id}${q.state ? `<br><span class="cat-tag" style="font-size:0.65rem">${q.state}</span>` : ""}</td>
+      <td class="q-cell">
+        ${esc(q.q.de)}
+        ${q.image ? `<span class="cat-tag">[Bild]</span>` : ""}
+        ${qSub ? `<div class="table-sub ${AppState.lang}">${esc(qSub)}</div>` : ""}
+      </td>
+      <td class="a">
+        ${esc(c.de)}
+        ${cSub ? `<div class="table-sub ${AppState.lang}">${esc(cSub)}</div>` : ""}
+      </td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="3" style="text-align:center;padding:30px;color:var(--muted)">Keine Fragen gefunden.</td></tr>`;
+
+  if (countEl) {
+    countEl.textContent = `${rows.length} von ${ALL_QS.length} Fragen angezeigt. Ausdrucken zum Lernen: Strg + P.`;
+  }
+}

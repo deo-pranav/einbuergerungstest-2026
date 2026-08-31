@@ -1,0 +1,63 @@
+/* ================================================================== *
+ * Design Tokens & Theme Variables (Light, Dark, System Auto)
+ * ================================================================== */
+:root, html[data-theme="light"] {
+  --blue: #0066b3;
+  --blue-dark: #004d87;
+  --blue-light: #eaf3fb;
+  --ink: #16202b;
+  --muted: #5c6b7a;
+  --line: #dde3ea;
+  --bg: #f4f6f9;
+  --card: #ffffff;
+  --good: #1a7f4b;
+  --good-bg: #e8f6ee;
+  --bad: #b3261e;
+  --bad-bg: #fdecea;
+  --warn-bg: #fff8e1;
+  --warn-line: #e6b400;
+  --radius: 10px;
+  --btn-bg: #ffffff;
+  --btn-hover: #f7fbff;
+  --key-bg: #eef2f6;
+  --qnum-bg: #eaf3fb;
+  --qnum-color: var(--blue-dark);
+  --img-bg: #ffffff;
+  --star-gold: #f59e0b;
+}
+
+html[data-theme="dark"] {
+  --ink: #e6ebf1;
+  --muted: #9aa8b6;
+  --line: #2b3542;
+  --bg: #131a22;
+  --card: #1a222c;
+  --good-bg: #16301f;
+  --bad-bg: #33191a;
+  --warn-bg: #32290d;
+  --btn-bg: #202a36;
+  --btn-hover: #24303e;
+  --key-bg: #2b3542;
+  --qnum-bg: #1e2e3d;
+  --qnum-color: #8ec4f0;
+  --img-bg: #f4f6f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --ink: #e6ebf1;
+    --muted: #9aa8b6;
+    --line: #2b3542;
+    --bg: #131a22;
+    --card: #1a222c;
+    --good-bg: #16301f;
+    --bad-bg: #33191a;
+    --warn-bg: #32290d;
+    --btn-bg: #202a36;
+    --btn-hover: #24303e;
+    --key-bg: #2b3542;
+    --qnum-bg: #1e2e3d;
+    --qnum-color: #8ec4f0;
+    --img-bg: #f4f6f9;
+  }
+}
