@@ -113,7 +113,15 @@ window.initLanguagePacks = function() {
     window.PackState.registry = window.LANGUAGE_PACKS_REGISTRY;
   }
 
-  // Load any installed packs from LocalStorage cache into memory
+  // Load pre-bundled language packs (14 languages built into the app)
+  if (window.BUNDLED_LANGUAGE_PACKS) {
+    Object.keys(window.BUNDLED_LANGUAGE_PACKS).forEach(langCode => {
+      window.PackState.cache[langCode] = window.BUNDLED_LANGUAGE_PACKS[langCode];
+      window.PackState.installed.add(langCode);
+    });
+  }
+
+  // Load any user-installed packs from LocalStorage cache into memory
   window.PackState.installed.forEach(langCode => {
     const cached = window.store.get(`et.pack.${langCode}`, null);
     if (cached) {
@@ -137,6 +145,7 @@ window.initLanguagePacks = function() {
 };
 
 window.isPackInstalled = function(langCode) {
+  if (window.BUNDLED_LANGUAGE_PACKS && window.BUNDLED_LANGUAGE_PACKS[langCode]) return true;
   return window.PackState.installed.has(langCode) && !!window.PackState.cache[langCode];
 };
 

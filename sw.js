@@ -20,6 +20,7 @@ const STATIC_ASSETS = [
   './js/app.js',
   './data/packs/registry.js',
   './data/packs/registry.json',
+  './data/packs/bundled_packs.js',
   './data/questions_core.js',
   './data/questions_core.json',
   './data/packs/en.json',
