@@ -2,10 +2,25 @@
  * Modular Language Pack & Internationalization Engine
  * ================================================================== */
 
+window.PackFilter = {
+  query: "",
+  tab: "all" // "all", "installed", "available"
+};
+
 window.PackState = {
   registry: window.LANGUAGE_PACKS_REGISTRY || [
     { code: "en", name: "Englisch", native: "English", flag: "🇬🇧", file: "data/packs/en.json", jsFile: "data/packs/en.js", size: "90 KB" },
-    { code: "hi", name: "Hindi", native: "हिन्दी", flag: "🇮🇳", file: "data/packs/hi.json", jsFile: "data/packs/hi.js", size: "177 KB" }
+    { code: "hi", name: "Hindi", native: "हिन्दी", flag: "🇮🇳", file: "data/packs/hi.json", jsFile: "data/packs/hi.js", size: "177 KB" },
+    { code: "tr", name: "Türkisch", native: "Türkçe", flag: "🇹🇷", file: "data/packs/tr.json", jsFile: "data/packs/tr.js", size: "95 KB" },
+    { code: "ar", name: "Arabisch", native: "العربية", flag: "🇸🇾", file: "data/packs/ar.json", jsFile: "data/packs/ar.js", size: "125 KB" },
+    { code: "uk", name: "Ukrainisch", native: "Українська", flag: "🇺🇦", file: "data/packs/uk.json", jsFile: "data/packs/uk.js", size: "138 KB" },
+    { code: "ru", name: "Russisch", native: "Русский", flag: "🇷🇺", file: "data/packs/ru.json", jsFile: "data/packs/ru.js", size: "135 KB" },
+    { code: "fa", name: "Persisch / Farsi", native: "فارسی", flag: "🇮🇷", file: "data/packs/fa.json", jsFile: "data/packs/fa.js", size: "120 KB" },
+    { code: "es", name: "Spanisch", native: "Español", flag: "🇪🇸", file: "data/packs/es.json", jsFile: "data/packs/es.js", size: "95 KB" },
+    { code: "fr", name: "Französisch", native: "Français", flag: "🇫🇷", file: "data/packs/fr.json", jsFile: "data/packs/fr.js", size: "98 KB" },
+    { code: "pl", name: "Polnisch", native: "Polski", flag: "🇵🇱", file: "data/packs/pl.json", jsFile: "data/packs/pl.js", size: "98 KB" },
+    { code: "it", name: "Italienisch", native: "Italiano", flag: "🇮🇹", file: "data/packs/it.json", jsFile: "data/packs/it.js", size: "95 KB" },
+    { code: "vi", name: "Vietnamesisch", native: "Tiếng Việt", flag: "🇻🇳", file: "data/packs/vi.json", jsFile: "data/packs/vi.js", size: "105 KB" }
   ],
   installed: new Set(window.store ? window.store.get("et.installedPacks", ["en"]) : ["en"]),
   cache: {},
@@ -27,7 +42,7 @@ window.REGISTER_LANGUAGE_PACK = function(langCode, data) {
 };
 
 window.initLanguagePacks = function() {
-  if (window.LANGUAGE_PACKS_REGISTRY) {
+  if (window.LANGUAGE_PACKS_REGISTRY && window.LANGUAGE_PACKS_REGISTRY.length) {
     window.PackState.registry = window.LANGUAGE_PACKS_REGISTRY;
   }
 
@@ -190,20 +205,47 @@ window.renderLanguagePackModal = function(highlightLang) {
   const modal = window.el("lang-modal");
   if (!modal) return;
 
+  const q = (window.PackFilter.query || "").trim().toLowerCase();
+  const currentTab = window.PackFilter.tab || "all";
+
+  // Filter provider list
+  const filteredPacks = window.PackState.registry.filter(p => {
+    const installed = window.isPackInstalled(p.code);
+    if (currentTab === "installed" && !installed) return false;
+    if (currentTab === "available" && installed) return false;
+
+    if (!q) return true;
+    const searchString = `${p.name} ${p.native} ${p.code}`.toLowerCase();
+    return searchString.includes(q);
+  });
+
+  const totalAvailable = window.PackState.registry.length;
+  const totalInstalled = window.PackState.installed.size;
+
   modal.innerHTML = `
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>🌐 Sprachpakete verwalten</h3>
+        <div>
+          <h3 style="margin:0">🌐 Sprachpakete & Übersetzungen</h3>
+          <span style="font-size:0.8rem;color:var(--muted)">${totalAvailable} Sprachen vom Provider unterstützt · 100% Offline</span>
+        </div>
         <button class="ctrl-btn modal-close" id="modal-close-btn" title="Schließen">✕</button>
       </div>
 
       <div class="modal-body">
-        <p class="lead" style="margin-bottom:14px">
-          Laden Sie Übersetzungspakete für Offline-Nutzung herunter. Alle Übersetzungen werden lokal auf Ihrem Gerät gespeichert.
-        </p>
+        <!-- Search input -->
+        <input type="search" id="pack-search-input" class="pack-search" placeholder="🔍 Sprachpaket suchen (z.B. Türkisch, Arabic, русский, Español) …" value="${window.esc(window.PackFilter.query)}">
+
+        <!-- Filter Chips -->
+        <div class="pack-filters">
+          <button class="pack-chip ${currentTab === 'all' ? 'active' : ''}" data-tab="all">Alle (${totalAvailable})</button>
+          <button class="pack-chip ${currentTab === 'installed' ? 'active' : ''}" data-tab="installed">Installiert (${totalInstalled})</button>
+          <button class="pack-chip ${currentTab === 'available' ? 'active' : ''}" data-tab="available">Verfügbar (${totalAvailable - totalInstalled})</button>
+        </div>
 
         <div class="pack-list">
-          <!-- German Base -->
+          <!-- German Base (Only shown on 'all' or 'installed' when not searching or matching 'deutsch') -->
+          ${(currentTab !== 'available' && (!q || 'deutsch german de'.includes(q))) ? `
           <div class="pack-card active-base">
             <div class="pack-info">
               <span class="pack-flag">🇩🇪</span>
@@ -217,10 +259,10 @@ window.renderLanguagePackModal = function(highlightLang) {
                 ${window.AppState.lang === 'de' ? '✓ Aktiv' : 'Auswählen'}
               </button>
             </div>
-          </div>
+          </div>` : ''}
 
           <!-- Downloadable Packs -->
-          ${window.PackState.registry.map(p => {
+          ${filteredPacks.length ? filteredPacks.map(p => {
             const installed = window.isPackInstalled(p.code);
             const active = window.AppState.lang === p.code;
             const isHighlight = p.code === highlightLang && !installed;
@@ -246,10 +288,45 @@ window.renderLanguagePackModal = function(highlightLang) {
                   `}
                 </div>
               </div>`;
-          }).join("")}
+          }).join("") : `
+            <div style="text-align:center;padding:24px;color:var(--muted)">
+              Kein Sprachpaket für „${window.esc(window.PackFilter.query)}“ im Katalog gefunden.
+            </div>
+          `}
+        </div>
+
+        <!-- Custom Importer Box -->
+        <div class="pack-custom-box">
+          <h4>➕ Eigenes Sprachpaket importieren</h4>
+          <p>Laden Sie ein benutzerdefiniertes JSON-Sprachpaket von Ihrem Gerät hoch:</p>
+          <label class="btn btn-sm" style="cursor:pointer;display:inline-block">
+            📁 JSON-Sprachpaket auswählen
+            <input type="file" id="btn-import-pack" accept=".json" style="display:none">
+          </label>
         </div>
       </div>
     </div>`;
+
+  // Search input handler
+  const sInput = window.el("pack-search-input");
+  if (sInput) {
+    if (typeof sInput.focus === "function") sInput.focus();
+    if (typeof sInput.setSelectionRange === "function" && sInput.value) {
+      sInput.setSelectionRange(sInput.value.length, sInput.value.length);
+    }
+    sInput.oninput = e => {
+      window.PackFilter.query = e.target.value;
+      window.renderLanguagePackModal(highlightLang);
+    };
+  }
+
+  // Filter chips
+  modal.querySelectorAll("[data-tab]").forEach(chip => {
+    chip.onclick = () => {
+      window.PackFilter.tab = chip.dataset.tab;
+      window.renderLanguagePackModal(highlightLang);
+    };
+  });
 
   const closeBtn = window.el("modal-close-btn");
   if (closeBtn) closeBtn.onclick = window.closeLanguagePackModal;
@@ -295,6 +372,43 @@ window.renderLanguagePackModal = function(highlightLang) {
       });
     };
   });
+
+  // Custom JSON Pack Import
+  const importInput = window.el("btn-import-pack");
+  if (importInput) {
+    importInput.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const packData = JSON.parse(ev.target.result);
+          const langCode = file.name.replace(/\.json$/i, "").toLowerCase().slice(0, 10);
+          window.REGISTER_LANGUAGE_PACK(langCode, packData);
+          
+          // Add to registry if not present
+          if (!window.PackState.registry.some(p => p.code === langCode)) {
+            window.PackState.registry.push({
+              code: langCode,
+              name: `Benutzerdefiniert (${langCode.toUpperCase()})`,
+              native: langCode.toUpperCase(),
+              flag: "🌐",
+              file: "",
+              jsFile: "",
+              size: `${Math.round(ev.target.result.length / 1024)} KB`,
+              count: Object.keys(packData).length
+            });
+          }
+          window.setLanguage(langCode);
+          alert(`Sprachpaket '${langCode.toUpperCase()}' erfolgreich importiert und aktiviert!`);
+          window.renderLanguagePackModal();
+        } catch (err) {
+          alert("Fehler beim Lesen des Sprachpakets: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+  }
 };
 
 window.initTheme = function() {

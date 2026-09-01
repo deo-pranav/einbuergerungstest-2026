@@ -26,6 +26,18 @@ const STATIC_ASSETS = [
   './data/packs/en.js',
   './data/packs/hi.json',
   './data/packs/hi.js',
+  './data/packs/tr.json',
+  './data/packs/tr.js',
+  './data/packs/ar.json',
+  './data/packs/ar.js',
+  './data/packs/uk.json',
+  './data/packs/uk.js',
+  './data/packs/ru.json',
+  './data/packs/ru.js',
+  './data/packs/fa.json',
+  './data/packs/fa.js',
+  './data/packs/es.json',
+  './data/packs/es.js',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
