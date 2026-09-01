@@ -2,33 +2,33 @@
  * View: Progress Dashboard & Learning Analytics (Mein Fortschritt)
  * ================================================================== */
 
-function renderStats() {
-  const statsHost = el("view-stats");
+window.renderStats = function() {
+  const statsHost = window.el("view-stats");
   if (!statsHost) return;
 
-  const st = STATES.find(s => s.code === AppState.stateCode) || { name: "Bayern" };
-  const mastery = getMasteryStats();
-  const readiness = getReadinessScore();
-  const cats = getCategoryBreakdown();
-  const best = store.get("et.bestExam", null);
-  const examCount = AppState.examHistory.length;
-  const passedExams = AppState.examHistory.filter(e => e.pass).length;
+  const st = window.STATES.find(s => s.code === window.AppState.stateCode) || { name: "Bayern" };
+  const mastery = window.getMasteryStats ? window.getMasteryStats() : { total: 310, mastered: 0, learning: 0, struggling: 0, unseen: 310, bookmarked: 0 };
+  const readiness = window.getReadinessScore ? window.getReadinessScore() : 0;
+  const cats = window.getCategoryBreakdown ? window.getCategoryBreakdown() : {};
+  const best = window.store ? window.store.get("et.bestExam", null) : null;
+  const examCount = window.AppState.examHistory.length;
+  const passedExams = window.AppState.examHistory.filter(e => e.pass).length;
 
-  const strugglingQs = ALL_QS.filter(q => {
-    if (q.state !== null && q.state !== AppState.stateCode) return false;
-    const h = AppState.history[q.id];
+  const strugglingQs = window.ALL_QS.filter(q => {
+    if (q.state !== null && q.state !== window.AppState.stateCode) return false;
+    const h = window.AppState.history[q.id];
     return h && h.wrong > h.right;
   });
 
-  const bookmarkedQs = ALL_QS.filter(q => AppState.bookmarks.has(q.id));
+  const bookmarkedQs = window.ALL_QS.filter(q => window.AppState.bookmarks.has(q.id));
 
-  const unseenQs = ALL_QS.filter(q => {
-    if (q.state !== null && q.state !== AppState.stateCode) return false;
-    const h = AppState.history[q.id];
+  const unseenQs = window.ALL_QS.filter(q => {
+    if (q.state !== null && q.state !== window.AppState.stateCode) return false;
+    const h = window.AppState.history[q.id];
     return !h || (h.right === 0 && h.wrong === 0);
   });
 
-  const lastMissedQs = ALL_QS.filter(q => (AppState.lastMissed || []).includes(q.id));
+  const lastMissedQs = window.ALL_QS.filter(q => (window.AppState.lastMissed || []).includes(q.id));
 
   // Determine Readiness Badge
   let readinessBadge = "Anfänger";
@@ -45,7 +45,7 @@ function renderStats() {
           <div>
             <h2>Lernfortschritt & Trends</h2>
             <p class="lead" style="margin:4px 0 0 0">
-              Prüfungspool für <strong>${esc(st.name)}</strong> (300 bundesweit + 10 Landesfragen = 310 Fragen)
+              Prüfungspool für <strong>${window.esc(st.name)}</strong> (300 bundesweit + 10 Landesfragen = 310 Fragen)
             </p>
           </div>
           <div class="readiness-gauge">
@@ -122,7 +122,7 @@ function renderStats() {
             return `
               <div class="cat-row">
                 <div class="cat-row-header">
-                  <span class="cat-name">${esc(cName)}</span>
+                  <span class="cat-name">${window.esc(cName)}</span>
                   <span class="cat-stats">${attempts ? `${acc}% Genauigkeit (${cData.right}/${attempts})` : `Noch nicht geübt (${cData.total} Fragen)`}</span>
                 </div>
                 <div class="cat-progress-bar">
@@ -139,16 +139,16 @@ function renderStats() {
           <h3>Prüfungshistorie (${examCount} Simulationen)</h3>
           ${best != null ? `<span class="badge-best">Bester Test: ${best}/33</span>` : ""}
         </div>
-        ${AppState.examHistory.length ? `
+        ${window.AppState.examHistory.length ? `
           <table class="history-table">
             <thead>
               <tr><th>Datum</th><th>Bundesland</th><th>Ergebnis</th><th>Status</th></tr>
             </thead>
             <tbody>
-              ${AppState.examHistory.map(e => `
+              ${window.AppState.examHistory.map(e => `
                 <tr>
-                  <td>${esc(e.date)}</td>
-                  <td>${esc(e.stateCode || "BY")}</td>
+                  <td>${window.esc(e.date)}</td>
+                  <td>${window.esc(e.stateCode || "BY")}</td>
                   <td><b>${e.score}</b> / ${e.total}</td>
                   <td><span class="verdict-chip ${e.pass ? 'pass' : 'fail'}">${e.pass ? 'Bestanden' : 'Nicht bestanden'}</span></td>
                 </tr>`).join("")}
@@ -175,59 +175,59 @@ function renderStats() {
     </div>`;
 
   // Bind Action Buttons
-  const bStruggling = el("act-struggling");
+  const bStruggling = window.el("act-struggling");
   if (bStruggling) bStruggling.onclick = () => {
-    startPractice(shuffled(strugglingQs), "Schwachstellen-Training");
-    selectTab("practice");
+    window.startPractice(window.shuffled(strugglingQs), "Schwachstellen-Training");
+    window.selectTab("practice");
   };
 
-  const bBookmarks = el("act-bookmarks");
+  const bBookmarks = window.el("act-bookmarks");
   if (bBookmarks) bBookmarks.onclick = () => {
-    startPractice(bookmarkedQs.slice(), "Gemerkte Fragen (Favoriten)");
-    selectTab("practice");
+    window.startPractice(bookmarkedQs.slice(), "Gemerkte Fragen (Favoriten)");
+    window.selectTab("practice");
   };
 
-  const bUnseen = el("act-unseen");
+  const bUnseen = window.el("act-unseen");
   if (bUnseen) bUnseen.onclick = () => {
-    startPractice(sample(unseenQs, Math.min(25, unseenQs.length)), "Neue ungesehene Fragen");
-    selectTab("practice");
+    window.startPractice(window.sample(unseenQs, Math.min(25, unseenQs.length)), "Neue ungesehene Fragen");
+    window.selectTab("practice");
   };
 
-  const bLastMissed = el("act-lastmissed");
+  const bLastMissed = window.el("act-lastmissed");
   if (bLastMissed) bLastMissed.onclick = () => {
-    startPractice(lastMissedQs.slice(), "Fehleranalyse: Letzte Prüfung");
-    selectTab("practice");
+    window.startPractice(lastMissedQs.slice(), "Fehleranalyse: Letzte Prüfung");
+    window.selectTab("practice");
   };
 
   // Backup handlers
-  const bExport = el("btn-export-backup");
-  if (bExport) bExport.onclick = exportProgressJson;
+  const bExport = window.el("btn-export-backup");
+  if (bExport) bExport.onclick = window.exportProgressJson;
 
-  const bImport = el("btn-import-backup");
+  const bImport = window.el("btn-import-backup");
   if (bImport) bImport.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
-    importProgressJson(file, (ok, err) => {
+    window.importProgressJson(file, (ok, err) => {
       if (ok) {
         alert("Lernfortschritt erfolgreich importiert!");
-        renderStats();
-        renderExamIntro();
-        renderPicker();
-        renderTable();
+        window.renderStats();
+        window.renderExamIntro();
+        window.renderPicker();
+        window.renderTable();
       } else {
         alert("Fehler beim Importieren der Datei: " + (err ? err.message : "Ungültiges Format"));
       }
     });
   };
 
-  const bReset = el("btn-reset-backup");
+  const bReset = window.el("btn-reset-backup");
   if (bReset) bReset.onclick = () => {
     if (confirm("Möchten Sie Ihren gesamten Lernfortschritt, Prüfungsergebnisse und Merklisten wirklich löschen?")) {
-      resetAllProgress();
-      renderStats();
-      renderExamIntro();
-      renderPicker();
-      renderTable();
+      window.resetAllProgress();
+      window.renderStats();
+      window.renderExamIntro();
+      window.renderPicker();
+      window.renderTable();
     }
   };
-}
+};

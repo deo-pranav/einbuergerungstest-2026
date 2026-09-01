@@ -2,87 +2,94 @@
  * Modular Language Pack & Internationalization Engine
  * ================================================================== */
 
-const PackState = {
+window.PackState = {
   registry: window.LANGUAGE_PACKS_REGISTRY || [
     { code: "en", name: "Englisch", native: "English", flag: "🇬🇧", file: "data/packs/en.json", jsFile: "data/packs/en.js", size: "90 KB" },
     { code: "hi", name: "Hindi", native: "हिन्दी", flag: "🇮🇳", file: "data/packs/hi.json", jsFile: "data/packs/hi.js", size: "177 KB" }
   ],
-  installed: new Set(store.get("et.installedPacks", ["en"])), // default: English installed
+  installed: new Set(window.store ? window.store.get("et.installedPacks", ["en"]) : ["en"]),
   cache: {},
   loading: {}
 };
 
 // Global hook for script-injected packs
 window.REGISTER_LANGUAGE_PACK = function(langCode, data) {
-  PackState.cache[langCode] = data;
-  PackState.installed.add(langCode);
-  store.set("et.installedPacks", Array.from(PackState.installed));
-  store.set(`et.pack.${langCode}`, data);
-  if (typeof PackState.loading[langCode] === "function") {
-    PackState.loading[langCode](true);
-    delete PackState.loading[langCode];
+  window.PackState.cache[langCode] = data;
+  window.PackState.installed.add(langCode);
+  if (window.store) {
+    window.store.set("et.installedPacks", Array.from(window.PackState.installed));
+    window.store.set(`et.pack.${langCode}`, data);
+  }
+  if (typeof window.PackState.loading[langCode] === "function") {
+    window.PackState.loading[langCode](true);
+    delete window.PackState.loading[langCode];
   }
 };
 
-function initLanguagePacks() {
+window.initLanguagePacks = function() {
+  if (window.LANGUAGE_PACKS_REGISTRY) {
+    window.PackState.registry = window.LANGUAGE_PACKS_REGISTRY;
+  }
+
   // Load any installed packs from LocalStorage cache into memory
-  PackState.installed.forEach(langCode => {
-    const cached = store.get(`et.pack.${langCode}`, null);
+  window.PackState.installed.forEach(langCode => {
+    const cached = window.store.get(`et.pack.${langCode}`, null);
     if (cached) {
-      PackState.cache[langCode] = cached;
+      window.PackState.cache[langCode] = cached;
     }
   });
 
-  // Ensure active language is installed; if not fallback to 'de' or load it
-  if (AppState.lang !== "de") {
-    if (!PackState.cache[AppState.lang]) {
-      loadLanguagePack(AppState.lang, ok => {
-        if (!ok && AppState.lang !== "de") {
-          setLanguage("de");
+  // Ensure active language is loaded if set to non-de
+  if (window.AppState.lang !== "de") {
+    if (!window.PackState.cache[window.AppState.lang]) {
+      window.loadLanguagePack(window.AppState.lang, ok => {
+        if (!ok && window.AppState.lang !== "de") {
+          window.setLanguage("de");
         } else {
-          updateLanguageUI();
+          window.updateLanguageUI();
         }
       });
     }
   }
-}
+  window.updateLanguageUI();
+};
 
-function isPackInstalled(langCode) {
-  return PackState.installed.has(langCode) && !!PackState.cache[langCode];
-}
+window.isPackInstalled = function(langCode) {
+  return window.PackState.installed.has(langCode) && !!window.PackState.cache[langCode];
+};
 
-function loadLanguagePack(langCode, callback) {
+window.loadLanguagePack = function(langCode, callback) {
   if (langCode === "de") {
     if (callback) callback(true);
     return;
   }
 
   // 1. In memory
-  if (PackState.cache[langCode]) {
-    PackState.installed.add(langCode);
-    store.set("et.installedPacks", Array.from(PackState.installed));
+  if (window.PackState.cache[langCode]) {
+    window.PackState.installed.add(langCode);
+    window.store.set("et.installedPacks", Array.from(window.PackState.installed));
     if (callback) callback(true);
     return;
   }
 
   // 2. In LocalStorage
-  const localData = store.get(`et.pack.${langCode}`, null);
+  const localData = window.store.get(`et.pack.${langCode}`, null);
   if (localData) {
-    PackState.cache[langCode] = localData;
-    PackState.installed.add(langCode);
-    store.set("et.installedPacks", Array.from(PackState.installed));
+    window.PackState.cache[langCode] = localData;
+    window.PackState.installed.add(langCode);
+    window.store.set("et.installedPacks", Array.from(window.PackState.installed));
     if (callback) callback(true);
     return;
   }
 
-  const reg = PackState.registry.find(p => p.code === langCode);
+  const reg = window.PackState.registry.find(p => p.code === langCode);
   if (!reg) {
     if (callback) callback(false, new Error("Unbekanntes Sprachpaket"));
     return;
   }
 
   // 3. Fetch from JSON or script
-  if (window.location.protocol.startsWith("http")) {
+  if (window.location && window.location.protocol && window.location.protocol.startsWith("http")) {
     fetch(reg.file)
       .then(res => {
         if (!res.ok) throw new Error("HTTP error " + res.status);
@@ -93,61 +100,60 @@ function loadLanguagePack(langCode, callback) {
         if (callback) callback(true);
       })
       .catch(() => {
-        loadPackViaScript(reg, callback);
+        window.loadPackViaScript(reg, callback);
       });
   } else {
-    loadPackViaScript(reg, callback);
+    window.loadPackViaScript(reg, callback);
   }
-}
+};
 
-function loadPackViaScript(reg, callback) {
-  PackState.loading[reg.code] = callback;
+window.loadPackViaScript = function(reg, callback) {
+  window.PackState.loading[reg.code] = callback;
   const script = document.createElement("script");
   script.src = reg.jsFile;
   script.onerror = () => {
-    delete PackState.loading[reg.code];
+    delete window.PackState.loading[reg.code];
     if (callback) callback(false, new Error("Laden des Sprachpakets fehlgeschlagen"));
   };
   document.head.appendChild(script);
-}
+};
 
-function deleteLanguagePack(langCode) {
+window.deleteLanguagePack = function(langCode) {
   if (langCode === "de") return;
-  PackState.installed.delete(langCode);
-  delete PackState.cache[langCode];
-  store.set("et.installedPacks", Array.from(PackState.installed));
-  store.remove(`et.pack.${langCode}`);
+  window.PackState.installed.delete(langCode);
+  delete window.PackState.cache[langCode];
+  window.store.set("et.installedPacks", Array.from(window.PackState.installed));
+  window.store.remove(`et.pack.${langCode}`);
 
-  if (AppState.lang === langCode) {
-    setLanguage("de");
+  if (window.AppState.lang === langCode) {
+    window.setLanguage("de");
   }
-  renderLanguagePackModal();
-}
+  window.renderLanguagePackModal();
+};
 
-function resolveQuestionSubText(q) {
-  if (!q || AppState.lang === "de") return "";
-  const pack = PackState.cache[AppState.lang];
+window.resolveQuestionSubText = function(q) {
+  if (!q || window.AppState.lang === "de") return "";
+  const pack = window.PackState.cache[window.AppState.lang];
   if (!pack || !pack[String(q.id)]) return "";
   return pack[String(q.id)].q || "";
-}
+};
 
-function resolveOptionSubText(q, optIndex) {
-  if (!q || AppState.lang === "de") return "";
-  const pack = PackState.cache[AppState.lang];
+window.resolveOptionSubText = function(q, optIndex) {
+  if (!q || window.AppState.lang === "de") return "";
+  const pack = window.PackState.cache[window.AppState.lang];
   if (!pack || !pack[String(q.id)] || !pack[String(q.id)].options) return "";
   return pack[String(q.id)].options[optIndex] || "";
-}
+};
 
-function setLanguage(lang) {
-  if (lang !== "de" && !isPackInstalled(lang)) {
-    // Prompt to download
-    openLanguagePackModal(lang);
+window.setLanguage = function(lang) {
+  if (lang !== "de" && !window.isPackInstalled(lang)) {
+    window.openLanguagePackModal(lang);
     return;
   }
 
-  AppState.lang = lang;
-  store.set("et.lang", AppState.lang);
-  updateLanguageUI();
+  window.AppState.lang = lang;
+  window.store.set("et.lang", window.AppState.lang);
+  window.updateLanguageUI();
 
   if (window.S) {
     window.renderQ();
@@ -155,16 +161,16 @@ function setLanguage(lang) {
   if (typeof window.renderTable === "function") {
     window.renderTable();
   }
-}
+};
 
-function updateLanguageUI() {
+window.updateLanguageUI = function() {
   document.querySelectorAll(".lang-btn").forEach(btn => {
-    btn.setAttribute("aria-pressed", String(btn.dataset.lang === AppState.lang));
+    btn.setAttribute("aria-pressed", String(btn.dataset.lang === window.AppState.lang));
   });
-}
+};
 
-function openLanguagePackModal(targetLang) {
-  let modal = el("lang-modal");
+window.openLanguagePackModal = function(targetLang) {
+  let modal = window.el("lang-modal");
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "lang-modal";
@@ -172,16 +178,16 @@ function openLanguagePackModal(targetLang) {
     document.body.appendChild(modal);
   }
   modal.hidden = false;
-  renderLanguagePackModal(targetLang);
-}
+  window.renderLanguagePackModal(targetLang);
+};
 
-function closeLanguagePackModal() {
-  const modal = el("lang-modal");
+window.closeLanguagePackModal = function() {
+  const modal = window.el("lang-modal");
   if (modal) modal.hidden = true;
-}
+};
 
-function renderLanguagePackModal(highlightLang) {
-  const modal = el("lang-modal");
+window.renderLanguagePackModal = function(highlightLang) {
+  const modal = window.el("lang-modal");
   if (!modal) return;
 
   modal.innerHTML = `
@@ -207,23 +213,23 @@ function renderLanguagePackModal(highlightLang) {
               </div>
             </div>
             <div class="pack-action">
-              <button class="btn btn-sm ${AppState.lang === 'de' ? 'btn-primary' : ''}" id="btn-use-de">
-                ${AppState.lang === 'de' ? '✓ Aktiv' : 'Auswählen'}
+              <button class="btn btn-sm ${window.AppState.lang === 'de' ? 'btn-primary' : ''}" id="btn-use-de">
+                ${window.AppState.lang === 'de' ? '✓ Aktiv' : 'Auswählen'}
               </button>
             </div>
           </div>
 
           <!-- Downloadable Packs -->
-          ${PackState.registry.map(p => {
-            const installed = isPackInstalled(p.code);
-            const active = AppState.lang === p.code;
+          ${window.PackState.registry.map(p => {
+            const installed = window.isPackInstalled(p.code);
+            const active = window.AppState.lang === p.code;
             const isHighlight = p.code === highlightLang && !installed;
             return `
               <div class="pack-card ${active ? 'active-pack' : ''} ${isHighlight ? 'highlight-pack' : ''}">
                 <div class="pack-info">
                   <span class="pack-flag">${p.flag}</span>
                   <div>
-                    <b>${esc(p.name)} (${esc(p.native)})</b>
+                    <b>${window.esc(p.name)} (${window.esc(p.native)})</b>
                     <span class="pack-meta">${p.size} · 460 Fragen übersetzt</span>
                   </div>
                 </div>
@@ -245,25 +251,29 @@ function renderLanguagePackModal(highlightLang) {
       </div>
     </div>`;
 
-  el("modal-close-btn").onclick = closeLanguagePackModal;
-  modal.onclick = e => { if (e.target === modal) closeLanguagePackModal(); };
+  const closeBtn = window.el("modal-close-btn");
+  if (closeBtn) closeBtn.onclick = window.closeLanguagePackModal;
+  modal.onclick = e => { if (e.target === modal) window.closeLanguagePackModal(); };
 
-  el("btn-use-de").onclick = () => {
-    setLanguage("de");
-    closeLanguagePackModal();
-  };
+  const btnUseDe = window.el("btn-use-de");
+  if (btnUseDe) {
+    btnUseDe.onclick = () => {
+      window.setLanguage("de");
+      window.closeLanguagePackModal();
+    };
+  }
 
   modal.querySelectorAll("[data-use]").forEach(btn => {
     btn.onclick = () => {
-      setLanguage(btn.dataset.use);
-      closeLanguagePackModal();
+      window.setLanguage(btn.dataset.use);
+      window.closeLanguagePackModal();
     };
   });
 
   modal.querySelectorAll("[data-delete]").forEach(btn => {
     btn.onclick = () => {
       if (confirm(`Sprachpaket '${btn.dataset.delete.toUpperCase()}' wirklich löschen?`)) {
-        deleteLanguagePack(btn.dataset.delete);
+        window.deleteLanguagePack(btn.dataset.delete);
       }
     };
   });
@@ -273,43 +283,43 @@ function renderLanguagePackModal(highlightLang) {
       const code = btn.dataset.install;
       btn.disabled = true;
       btn.textContent = "⏳ Laden …";
-      loadLanguagePack(code, (ok, err) => {
+      window.loadLanguagePack(code, (ok, err) => {
         if (ok) {
-          setLanguage(code);
-          renderLanguagePackModal();
-          closeLanguagePackModal();
+          window.setLanguage(code);
+          window.renderLanguagePackModal();
+          window.closeLanguagePackModal();
         } else {
           alert("Fehler beim Herunterladen: " + (err ? err.message : "Netzwerkfehler"));
-          renderLanguagePackModal();
+          window.renderLanguagePackModal();
         }
       });
     };
   });
-}
+};
 
-function initTheme() {
+window.initTheme = function() {
   const THEMES = ["light", "dark", "auto"];
   const ICONS = { light: "☀️", dark: "🌙", auto: "💻" };
 
   function applyTheme(t) {
-    AppState.theme = t;
-    store.set("et.theme", t);
+    window.AppState.theme = t;
+    window.store.set("et.theme", t);
     if (t === "auto") {
       document.documentElement.removeAttribute("data-theme");
     } else {
       document.documentElement.setAttribute("data-theme", t);
     }
-    const iconEl = el("theme-icon");
+    const iconEl = window.el("theme-icon");
     if (iconEl) iconEl.textContent = ICONS[t] || "☀️";
   }
 
-  const themeBtn = el("theme-btn");
+  const themeBtn = window.el("theme-btn");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      const next = THEMES[(THEMES.indexOf(AppState.theme) + 1) % THEMES.length];
+      const next = THEMES[(THEMES.indexOf(window.AppState.theme) + 1) % THEMES.length];
       applyTheme(next);
     });
   }
 
-  applyTheme(AppState.theme);
-}
+  applyTheme(window.AppState.theme);
+};

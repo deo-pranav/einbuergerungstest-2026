@@ -2,30 +2,32 @@
  * View: Practice Hub (Üben) & Spaced Repetition
  * ================================================================== */
 
-const practiceOpts = title => ({
-  mode: "practice",
-  host: "prac-card",
-  show: "prac-run",
-  hide: "picker",
-  title,
-  prog: { count: "pr-count", bar: "pr-bar", score: "pr-score", timer: null }
-});
+window.practiceOpts = function(title) {
+  return {
+    mode: "practice",
+    host: "prac-card",
+    show: "prac-run",
+    hide: "picker",
+    title,
+    prog: { count: "pr-count", bar: "pr-bar", score: "pr-score", timer: null }
+  };
+};
 
-function startPractice(list, title, forceSequential = false) {
+window.startPractice = function(list, title, forceSequential = false) {
   if (!list || !list.length) return;
-  const sequence = (!forceSequential && AppState.shuffleQuestions) ? shuffled(list) : list.slice();
-  startSession(sequence, practiceOpts(title));
-}
+  const sequence = (!forceSequential && window.AppState.shuffleQuestions) ? window.shuffled(list) : list.slice();
+  window.startSession(sequence, window.practiceOpts(title));
+};
 
-function renderPicker() {
-  const pickerEl = el("picker");
+window.renderPicker = function() {
+  const pickerEl = window.el("picker");
   if (!pickerEl) return;
 
-  const st = STATES.find(s => s.code === AppState.stateCode) || { name: "Bayern", startId: 311, endId: 320 };
-  const stateQs = ALL_QS.filter(q => q.state === AppState.stateCode);
-  const genQs = ALL_QS.filter(q => q.state === null);
-  const bookmarkedQs = ALL_QS.filter(q => AppState.bookmarks.has(q.id));
-  const missedQs = ALL_QS.filter(q => AppState.history[q.id] && AppState.history[q.id].wrong > AppState.history[q.id].right);
+  const st = window.STATES.find(s => s.code === window.AppState.stateCode) || { name: "Bayern", startId: 311, endId: 320 };
+  const stateQs = window.ALL_QS.filter(q => q.state === window.AppState.stateCode);
+  const genQs = window.ALL_QS.filter(q => q.state === null);
+  const bookmarkedQs = window.ALL_QS.filter(q => window.AppState.bookmarks.has(q.id));
+  const missedQs = window.ALL_QS.filter(q => window.AppState.history[q.id] && window.AppState.history[q.id].wrong > window.AppState.history[q.id].right);
 
   const cats = {};
   genQs.forEach(q => {
@@ -39,11 +41,11 @@ function renderPicker() {
     <!-- Randomizer Settings -->
     <div class="practice-settings">
       <label class="toggle-control" title="Fragen in zufälliger Reihenfolge anzeigen">
-        <input type="checkbox" id="toggle-shuffle-q" ${AppState.shuffleQuestions ? "checked" : ""}>
+        <input type="checkbox" id="toggle-shuffle-q" ${window.AppState.shuffleQuestions ? "checked" : ""}>
         <span>🔀 Fragen-Reihenfolge zufällig mischen</span>
       </label>
       <label class="toggle-control" title="Antwortoptionen (A–D) für jede Frage zufällig durchmischen">
-        <input type="checkbox" id="toggle-shuffle-opt" ${AppState.shuffleOptions ? "checked" : ""}>
+        <input type="checkbox" id="toggle-shuffle-opt" ${window.AppState.shuffleOptions ? "checked" : ""}>
         <span>🎲 Antwortoptionen (A–D) durchmischen</span>
       </label>
     </div>
@@ -51,13 +53,13 @@ function renderPicker() {
     <div class="group">
       <h3>Landesfragen & Schnellstart</h3>
       <button class="btn btn-primary bigbtn" data-set="state">
-        <b>Landesfragen ${esc(st.name)}</b><span>Die 10 landesspezifischen Fragen (Nr. ${st.startId}–${st.endId})</span>
+        <b>Landesfragen ${window.esc(st.name)}</b><span>Die 10 landesspezifischen Fragen (Nr. ${st.startId}–${st.endId})</span>
       </button>
       <button class="btn bigbtn" data-set="random20">
         <b>20 Zufallsfragen</b><span>Gemischte Fragerunde</span>
       </button>
       <button class="btn bigbtn" data-set="allgemein">
-        <b>Alle 300 bundesweiten Fragen</b><span>${AppState.shuffleQuestions ? "Zufällig gemischt" : "Reihenfolge 1 bis 300"}</span>
+        <b>Alle 300 bundesweiten Fragen</b><span>${window.AppState.shuffleQuestions ? "Zufällig gemischt" : "Reihenfolge 1 bis 300"}</span>
       </button>
       <button class="btn bigbtn" data-set="images">
         <b>Bildfragen</b><span>Alle Fragen mit offiziellen Abbildungen</span>
@@ -81,42 +83,42 @@ function renderPicker() {
       <h3>Nach Themengebiet (Bundesweit)</h3>
       <div class="chips">
         ${Object.keys(cats).sort().map(c =>
-          `<button class="btn" data-cat="${esc(c)}">${esc(c)}<span class="n">${cats[c]}</span></button>`
+          `<button class="btn" data-cat="${window.esc(c)}">${window.esc(c)}<span class="n">${cats[c]}</span></button>`
         ).join("")}
       </div>
     </div>`;
 
   // Checkbox Event Listeners
-  const chkShuffleQ = el("toggle-shuffle-q");
+  const chkShuffleQ = window.el("toggle-shuffle-q");
   if (chkShuffleQ) {
     chkShuffleQ.onchange = e => {
-      AppState.shuffleQuestions = e.target.checked;
-      store.set("et.shuffleQuestions", AppState.shuffleQuestions);
-      renderPicker();
+      window.AppState.shuffleQuestions = e.target.checked;
+      window.store.set("et.shuffleQuestions", window.AppState.shuffleQuestions);
+      window.renderPicker();
     };
   }
 
-  const chkShuffleOpt = el("toggle-shuffle-opt");
+  const chkShuffleOpt = window.el("toggle-shuffle-opt");
   if (chkShuffleOpt) {
     chkShuffleOpt.onchange = e => {
-      AppState.shuffleOptions = e.target.checked;
-      store.set("et.shuffleOptions", AppState.shuffleOptions);
+      window.AppState.shuffleOptions = e.target.checked;
+      window.store.set("et.shuffleOptions", window.AppState.shuffleOptions);
     };
   }
 
   pickerEl.querySelectorAll("[data-set]").forEach(b => {
     b.onclick = () => {
       const k = b.dataset.set;
-      if (k === "state")     startPractice(stateQs.slice(), `Landesfragen ${st.name}`);
-      if (k === "random20")  startPractice(sample(ALL_QS, 20), "20 Zufallsfragen");
-      if (k === "allgemein") startPractice(genQs.slice(), "300 Bundesweite Fragen");
-      if (k === "images")    startPractice(ALL_QS.filter(q => q.image || q.type === "image"), "Bildfragen");
-      if (k === "bookmarks") startPractice(bookmarkedQs.slice(), "Gemerkte Fragen");
-      if (k === "missed")    startPractice(missedQs.slice(), "Falsch beantwortete Fragen");
+      if (k === "state")     window.startPractice(stateQs.slice(), `Landesfragen ${st.name}`);
+      if (k === "random20")  window.startPractice(window.sample(window.ALL_QS, 20), "20 Zufallsfragen");
+      if (k === "allgemein") window.startPractice(genQs.slice(), "300 Bundesweite Fragen");
+      if (k === "images")    window.startPractice(window.ALL_QS.filter(q => q.image || q.type === "image"), "Bildfragen");
+      if (k === "bookmarks") window.startPractice(bookmarkedQs.slice(), "Gemerkte Fragen");
+      if (k === "missed")    window.startPractice(missedQs.slice(), "Falsch beantwortete Fragen");
     };
   });
 
   pickerEl.querySelectorAll("[data-cat]").forEach(b => {
-    b.onclick = () => startPractice(genQs.filter(q => q.cat === b.dataset.cat), b.dataset.cat);
+    b.onclick = () => window.startPractice(genQs.filter(q => q.cat === b.dataset.cat), b.dataset.cat);
   });
-}
+};

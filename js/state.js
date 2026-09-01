@@ -2,15 +2,20 @@
  * State Management & Local Storage Module (Zero-Signup Offline DB)
  * ================================================================== */
 
-const DB = window.QUESTIONS_DATABASE || { states: [], questions: [] };
-const ALL_QS = DB.questions || [];
-const STATES = DB.states || [];
+window.DB = window.QUESTIONS_DATABASE || { states: [], questions: [] };
+window.ALL_QS = window.DB.questions || [];
+window.STATES = window.DB.states || [];
 
-const el = id => document.getElementById(id);
-const esc = s => String(s == null ? "" : s)
-  .replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+window.el = function(id) {
+  return document.getElementById(id);
+};
 
-const store = {
+window.esc = function(s) {
+  return String(s == null ? "" : s)
+    .replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+};
+
+window.store = {
   get(k, d) {
     try {
       const v = localStorage.getItem(k);
@@ -31,35 +36,35 @@ const store = {
   }
 };
 
-const AppState = {
-  stateCode: store.get("et.state", "BY"),
-  lang: store.get("et.lang", "en"),               // "de", "en", "hi"
-  theme: store.get("et.theme", "light"),          // "light", "dark", "auto"
-  bookmarks: new Set(store.get("et.bookmarks", [])),
-  history: store.get("et.history", {}),           // { [id]: { right: 0, wrong: 0, streak: 0, last: 0 } }
-  examHistory: store.get("et.examHistory", []),   // [ { id, date, score, total, pass, stateCode, duration } ]
-  lastMissed: store.get("et.lastMissed", []),     // [ qids missed in last exam ]
-  shuffleQuestions: store.get("et.shuffleQuestions", true),
-  shuffleOptions: store.get("et.shuffleOptions", true)
+window.AppState = {
+  stateCode: window.store.get("et.state", "BY"),
+  lang: window.store.get("et.lang", "de"),               // "de", "en", "hi"
+  theme: window.store.get("et.theme", "light"),          // "light", "dark", "auto"
+  bookmarks: new Set(window.store.get("et.bookmarks", [])),
+  history: window.store.get("et.history", {}),           // { [id]: { right: 0, wrong: 0, streak: 0, last: 0 } }
+  examHistory: window.store.get("et.examHistory", []),   // [ { id, date, score, total, pass, stateCode, duration } ]
+  lastMissed: window.store.get("et.lastMissed", []),     // [ qids missed in last exam ]
+  shuffleQuestions: window.store.get("et.shuffleQuestions", true),
+  shuffleOptions: window.store.get("et.shuffleOptions", true)
 };
 
-function saveBookmarks() {
-  store.set("et.bookmarks", Array.from(AppState.bookmarks));
-}
+window.saveBookmarks = function() {
+  window.store.set("et.bookmarks", Array.from(window.AppState.bookmarks));
+};
 
-function saveHistory() {
-  store.set("et.history", AppState.history);
-}
+window.saveHistory = function() {
+  window.store.set("et.history", window.AppState.history);
+};
 
-function saveExamHistory() {
-  store.set("et.examHistory", AppState.examHistory);
-}
+window.saveExamHistory = function() {
+  window.store.set("et.examHistory", window.AppState.examHistory);
+};
 
-function recordAnswer(qid, ok) {
-  if (!AppState.history[qid]) {
-    AppState.history[qid] = { right: 0, wrong: 0, streak: 0, last: Date.now() };
+window.recordAnswer = function(qid, ok) {
+  if (!window.AppState.history[qid]) {
+    window.AppState.history[qid] = { right: 0, wrong: 0, streak: 0, last: Date.now() };
   }
-  const h = AppState.history[qid];
+  const h = window.AppState.history[qid];
   h.last = Date.now();
   if (ok) {
     h.right = (h.right || 0) + 1;
@@ -68,10 +73,10 @@ function recordAnswer(qid, ok) {
     h.wrong = (h.wrong || 0) + 1;
     h.streak = 0;
   }
-  saveHistory();
-}
+  window.saveHistory();
+};
 
-function recordExam(score, total, stateCode, missedIds = []) {
+window.recordExam = function(score, total, stateCode, missedIds = []) {
   const isPass = score >= 17;
   const entry = {
     id: Date.now(),
@@ -79,30 +84,29 @@ function recordExam(score, total, stateCode, missedIds = []) {
     score,
     total,
     pass: isPass,
-    stateCode: stateCode || AppState.stateCode
+    stateCode: stateCode || window.AppState.stateCode
   };
-  AppState.examHistory.unshift(entry);
-  if (AppState.examHistory.length > 30) AppState.examHistory.pop(); // keep last 30
-  saveExamHistory();
+  window.AppState.examHistory.unshift(entry);
+  if (window.AppState.examHistory.length > 30) window.AppState.examHistory.pop();
+  window.saveExamHistory();
 
-  AppState.lastMissed = missedIds;
-  store.set("et.lastMissed", AppState.lastMissed);
+  window.AppState.lastMissed = missedIds;
+  window.store.set("et.lastMissed", window.AppState.lastMissed);
 
-  const best = store.get("et.bestExam", 0);
-  if (score > best) store.set("et.bestExam", score);
-}
+  const best = window.store.get("et.bestExam", 0);
+  if (score > best) window.store.set("et.bestExam", score);
+};
 
-// Compute Mastery Status for all relevant questions (relevant = 300 nationwide + 10 state)
-function getMasteryStats() {
-  const relevantQs = ALL_QS.filter(q => q.state === null || q.state === AppState.stateCode);
+window.getMasteryStats = function() {
+  const relevantQs = window.ALL_QS.filter(q => q.state === null || q.state === window.AppState.stateCode);
   
-  let mastered = 0;   // streak >= 2
-  let learning = 0;   // attempted, right >= wrong
-  let struggling = 0; // wrong > right
-  let unseen = 0;     // never answered
+  let mastered = 0;
+  let learning = 0;
+  let struggling = 0;
+  let unseen = 0;
 
   relevantQs.forEach(q => {
-    const h = AppState.history[q.id];
+    const h = window.AppState.history[q.id];
     if (!h || (h.right === 0 && h.wrong === 0)) {
       unseen++;
     } else if (h.wrong > h.right) {
@@ -115,36 +119,32 @@ function getMasteryStats() {
   });
 
   return {
-    total: relevantQs.length, // 310
+    total: relevantQs.length,
     mastered,
     learning,
     struggling,
     unseen,
-    bookmarked: ALL_QS.filter(q => AppState.bookmarks.has(q.id)).length
+    bookmarked: window.ALL_QS.filter(q => window.AppState.bookmarks.has(q.id)).length
   };
-}
+};
 
-// Compute Readiness Score (0% - 100%)
-function getReadinessScore() {
-  const { total, mastered, learning, struggling } = getMasteryStats();
+window.getReadinessScore = function() {
+  const { total, mastered, learning, struggling } = window.getMasteryStats();
   if (total === 0) return 0;
-  
-  // Weight: Mastered (1.0), Learning (0.5), Struggling (0.1)
   const score = (mastered * 1.0 + learning * 0.5 + struggling * 0.1) / total * 100;
   return Math.min(100, Math.round(score));
-}
+};
 
-// Category breakdown
-function getCategoryBreakdown() {
+window.getCategoryBreakdown = function() {
   const cats = {};
-  const relevantQs = ALL_QS.filter(q => q.state === null || q.state === AppState.stateCode);
+  const relevantQs = window.ALL_QS.filter(q => q.state === null || q.state === window.AppState.stateCode);
   relevantQs.forEach(q => {
-    const catName = q.state ? `Landesfragen (${AppState.stateCode})` : (q.cat || "Allgemein");
+    const catName = q.state ? `Landesfragen (${window.AppState.stateCode})` : (q.cat || "Allgemein");
     if (!cats[catName]) {
       cats[catName] = { total: 0, right: 0, wrong: 0 };
     }
     cats[catName].total++;
-    const h = AppState.history[q.id];
+    const h = window.AppState.history[q.id];
     if (h) {
       cats[catName].right += (h.right || 0);
       cats[catName].wrong += (h.wrong || 0);
@@ -152,18 +152,17 @@ function getCategoryBreakdown() {
   });
 
   return cats;
-}
+};
 
-// Export / Import Backup Data
-function exportProgressJson() {
+window.exportProgressJson = function() {
   const data = {
     version: "2026.1",
     exportedAt: new Date().toISOString(),
-    stateCode: AppState.stateCode,
-    bookmarks: Array.from(AppState.bookmarks),
-    history: AppState.history,
-    examHistory: AppState.examHistory,
-    bestExam: store.get("et.bestExam", 0)
+    stateCode: window.AppState.stateCode,
+    bookmarks: Array.from(window.AppState.bookmarks),
+    history: window.AppState.history,
+    examHistory: window.AppState.examHistory,
+    bestExam: window.store.get("et.bestExam", 0)
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -172,31 +171,31 @@ function exportProgressJson() {
   a.download = `einbuergerungstest-fortschritt-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
-}
+};
 
-function importProgressJson(file, callback) {
+window.importProgressJson = function(file, callback) {
   const reader = new FileReader();
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
       if (data.bookmarks && Array.isArray(data.bookmarks)) {
-        AppState.bookmarks = new Set(data.bookmarks);
-        saveBookmarks();
+        window.AppState.bookmarks = new Set(data.bookmarks);
+        window.saveBookmarks();
       }
       if (data.history && typeof data.history === "object") {
-        AppState.history = data.history;
-        saveHistory();
+        window.AppState.history = data.history;
+        window.saveHistory();
       }
       if (data.examHistory && Array.isArray(data.examHistory)) {
-        AppState.examHistory = data.examHistory;
-        saveExamHistory();
+        window.AppState.examHistory = data.examHistory;
+        window.saveExamHistory();
       }
       if (data.bestExam != null) {
-        store.set("et.bestExam", data.bestExam);
+        window.store.set("et.bestExam", data.bestExam);
       }
       if (data.stateCode) {
-        AppState.stateCode = data.stateCode;
-        store.set("et.state", AppState.stateCode);
+        window.AppState.stateCode = data.stateCode;
+        window.store.set("et.state", window.AppState.stateCode);
       }
       if (callback) callback(true);
     } catch (err) {
@@ -204,16 +203,16 @@ function importProgressJson(file, callback) {
     }
   };
   reader.readAsText(file);
-}
+};
 
-function resetAllProgress() {
-  AppState.bookmarks.clear();
-  AppState.history = {};
-  AppState.examHistory = [];
-  AppState.lastMissed = [];
-  store.set("et.bookmarks", []);
-  store.set("et.history", {});
-  store.set("et.examHistory", []);
-  store.set("et.lastMissed", []);
-  store.remove("et.bestExam");
-}
+window.resetAllProgress = function() {
+  window.AppState.bookmarks.clear();
+  window.AppState.history = {};
+  window.AppState.examHistory = [];
+  window.AppState.lastMissed = [];
+  window.store.set("et.bookmarks", []);
+  window.store.set("et.history", {});
+  window.store.set("et.examHistory", []);
+  window.store.set("et.lastMissed", []);
+  window.store.remove("et.bestExam");
+};
