@@ -213,8 +213,8 @@ function renderResult() {
   el(window.S.prog.score).textContent = `${right} von ${asked}`;
 
   if (isExam) {
-    const best = store.get("et.bestExam", 0);
-    if (right > best) store.set("et.bestExam", right);
+    const wrongIds = wrong.map(r => r.id);
+    recordExam(right, asked, AppState.stateCode, wrongIds);
   }
 
   window.S.host.innerHTML = `

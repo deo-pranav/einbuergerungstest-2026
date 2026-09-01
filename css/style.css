@@ -463,6 +463,111 @@ table.all td.a { color: var(--good); font-weight: 600; width: 35%; }
 .info dt { font-weight: 600; margin-top: 14px; font-size: 0.95rem; }
 .info dd { margin: 3px 0 0; color: var(--muted); font-size: 0.92rem; }
 
+/* Stats & Analytics Dashboard */
+.stats-container { display: flex; flex-direction: column; gap: 18px; }
+
+.readiness-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.readiness-gauge {
+  text-align: right;
+}
+
+.gauge-pct {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.gauge-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.mastery-section { margin-top: 18px; }
+
+.mastery-bar-wrap {
+  display: flex;
+  height: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--line);
+  margin-bottom: 12px;
+}
+
+.mastery-seg { height: 100%; transition: width 0.3s ease; }
+.seg-mastered { background: #28a745; }
+.seg-learning { background: #0066b3; }
+.seg-struggling { background: #dc3545; }
+.seg-unseen { background: var(--line-strong); }
+
+.mastery-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.85rem;
+}
+
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.dot-mastered { background: #28a745; }
+.dot-learning { background: #0066b3; }
+.dot-struggling { background: #dc3545; }
+.dot-unseen { background: var(--line-strong); }
+.dim { color: var(--muted); font-size: 0.78rem; }
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.action-tile {
+  display: flex !important;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px !important;
+  text-align: left;
+  justify-content: flex-start;
+  height: 100%;
+}
+
+.action-icon { font-size: 1.5rem; flex-shrink: 0; }
+.action-meta { display: flex; flex-direction: column; gap: 2px; }
+.action-meta b { font-size: 0.95rem; }
+.action-meta span { font-size: 0.78rem; color: var(--muted); font-weight: normal; }
+
+.btn-highlight {
+  border-color: #dc3545 !important;
+  background: var(--bad-bg) !important;
+}
+
+.category-list { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.cat-row-header { display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 4px; }
+.cat-name { font-weight: 600; }
+.cat-stats { color: var(--muted); font-size: 0.82rem; }
+.cat-progress-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.cat-progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s ease; }
+
+.history-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.badge-best { font-size: 0.8rem; font-weight: 700; color: var(--good); background: var(--good-bg); padding: 4px 10px; border-radius: 12px; }
+.history-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 8px; }
+.history-table th, .history-table td { padding: 8px 10px; border-top: 1px solid var(--line); text-align: left; }
+.history-table th { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); border-top: 0; }
+.verdict-chip { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; }
+.verdict-chip.pass { background: var(--good-bg); color: var(--good); }
+.verdict-chip.fail { background: var(--bad-bg); color: var(--bad); }
+
+.backup-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+
 footer {
   border-top: 1px solid var(--line);
   padding: 18px 20px 40px;
@@ -475,7 +580,7 @@ footer a { color: var(--blue-dark); }
 
 /* Print Mode */
 @media print {
-  header nav, .header-controls, .actions, footer, .toolbar, .star-btn { display: none !important; }
+  header nav, .header-controls, .actions, footer, .toolbar, .star-btn, .readiness-gauge, .action-grid, .backup-actions { display: none !important; }
   body { background: #fff; }
   .card { border: 0; padding: 0; }
 }

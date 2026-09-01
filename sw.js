@@ -16,6 +16,7 @@ const STATIC_ASSETS = [
   './js/views/exam.js',
   './js/views/practice.js',
   './js/views/table.js',
+  './js/views/stats.js',
   './js/app.js',
   './data/questions_all.js',
   './data/questions_all.json',

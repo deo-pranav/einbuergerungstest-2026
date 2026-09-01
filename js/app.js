@@ -2,7 +2,7 @@
  * App Entry Point & Controller
  * ================================================================== */
 
-const VIEWS = ["exam", "practice", "all", "info"];
+const VIEWS = ["exam", "practice", "all", "stats", "info"];
 
 function selectTab(v) {
   document.querySelectorAll("nav.tabs button").forEach(b =>
@@ -11,6 +11,9 @@ function selectTab(v) {
     const viewSection = el("view-" + x);
     if (viewSection) viewSection.hidden = (x !== v);
   });
+  if (v === "stats" && typeof renderStats === "function") {
+    renderStats();
+  }
 }
 
 function initControls() {
@@ -28,6 +31,7 @@ function initControls() {
       renderExamIntro();
       renderPicker();
       renderTable();
+      if (typeof renderStats === "function") renderStats();
     });
   }
 
@@ -129,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderExamIntro();
   renderPicker();
   renderTable();
+  if (typeof renderStats === "function") renderStats();
 });
 
 // Fallback boot if DOMContentLoaded already fired
@@ -137,4 +142,5 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   renderExamIntro();
   renderPicker();
   renderTable();
+  if (typeof renderStats === "function") renderStats();
 }
