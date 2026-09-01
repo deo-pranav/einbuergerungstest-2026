@@ -3,6 +3,7 @@
   "version": "2026.1.0",
   "description": "Standalone German Citizenship Test App (300 Nationwide + 160 State Questions in DE/EN/HI)",
   "scripts": {
+    "start": "python3 -m http.server 8080",
     "build:web": "python3 tools/build_web_dist.py",
     "sync:android": "python3 tools/build_web_dist.py && npx cap sync android",
     "build:apk": "npm run sync:android && cd android && ./gradlew assembleDebug",
