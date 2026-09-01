@@ -11,9 +11,10 @@ const practiceOpts = title => ({
   prog: { count: "pr-count", bar: "pr-bar", score: "pr-score", timer: null }
 });
 
-function startPractice(list, title) {
+function startPractice(list, title, forceSequential = false) {
   if (!list || !list.length) return;
-  startSession(list, practiceOpts(title));
+  const sequence = (!forceSequential && AppState.shuffleQuestions) ? shuffled(list) : list.slice();
+  startSession(sequence, practiceOpts(title));
 }
 
 function renderPicker() {
@@ -35,6 +36,18 @@ function renderPicker() {
     <h2>Gezielt Üben</h2>
     <p class="lead">Lernen ohne Zeitdruck mit sofortiger Auflösung nach jeder Frage.</p>
 
+    <!-- Randomizer Settings -->
+    <div class="practice-settings">
+      <label class="toggle-control" title="Fragen in zufälliger Reihenfolge anzeigen">
+        <input type="checkbox" id="toggle-shuffle-q" ${AppState.shuffleQuestions ? "checked" : ""}>
+        <span>🔀 Fragen-Reihenfolge zufällig mischen</span>
+      </label>
+      <label class="toggle-control" title="Antwortoptionen (A–D) für jede Frage zufällig durchmischen">
+        <input type="checkbox" id="toggle-shuffle-opt" ${AppState.shuffleOptions ? "checked" : ""}>
+        <span>🎲 Antwortoptionen (A–D) durchmischen</span>
+      </label>
+    </div>
+
     <div class="group">
       <h3>Landesfragen & Schnellstart</h3>
       <button class="btn btn-primary bigbtn" data-set="state">
@@ -44,7 +57,7 @@ function renderPicker() {
         <b>20 Zufallsfragen</b><span>Gemischte Fragerunde</span>
       </button>
       <button class="btn bigbtn" data-set="allgemein">
-        <b>Alle 300 bundesweiten Fragen</b><span>Reihenfolge 1 bis 300</span>
+        <b>Alle 300 bundesweiten Fragen</b><span>${AppState.shuffleQuestions ? "Zufällig gemischt" : "Reihenfolge 1 bis 300"}</span>
       </button>
       <button class="btn bigbtn" data-set="images">
         <b>Bildfragen</b><span>Alle Fragen mit offiziellen Abbildungen</span>
@@ -72,6 +85,24 @@ function renderPicker() {
         ).join("")}
       </div>
     </div>`;
+
+  // Checkbox Event Listeners
+  const chkShuffleQ = el("toggle-shuffle-q");
+  if (chkShuffleQ) {
+    chkShuffleQ.onchange = e => {
+      AppState.shuffleQuestions = e.target.checked;
+      store.set("et.shuffleQuestions", AppState.shuffleQuestions);
+      renderPicker();
+    };
+  }
+
+  const chkShuffleOpt = el("toggle-shuffle-opt");
+  if (chkShuffleOpt) {
+    chkShuffleOpt.onchange = e => {
+      AppState.shuffleOptions = e.target.checked;
+      store.set("et.shuffleOptions", AppState.shuffleOptions);
+    };
+  }
 
   pickerEl.querySelectorAll("[data-set]").forEach(b => {
     b.onclick = () => {

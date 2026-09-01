@@ -38,7 +38,9 @@ const AppState = {
   bookmarks: new Set(store.get("et.bookmarks", [])),
   history: store.get("et.history", {}),           // { [id]: { right: 0, wrong: 0, streak: 0, last: 0 } }
   examHistory: store.get("et.examHistory", []),   // [ { id, date, score, total, pass, stateCode, duration } ]
-  lastMissed: store.get("et.lastMissed", [])      // [ qids missed in last exam ]
+  lastMissed: store.get("et.lastMissed", []),     // [ qids missed in last exam ]
+  shuffleQuestions: store.get("et.shuffleQuestions", true),
+  shuffleOptions: store.get("et.shuffleOptions", true)
 };
 
 function saveBookmarks() {

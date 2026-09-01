@@ -95,6 +95,17 @@ function renderQ() {
     ? `Landesfrage ${curStateObj ? curStateObj.name : q.state} · Nr. ${q.id}`
     : `Bundesweite Frage · Nr. ${q.id}`;
 
+  // Check if options are numbered image references (Bild 1..4 or 1..4)
+  const isImageNumbered = q.options.every(o => /^(bild\s*)?[1-4]$/i.test((o.de || "").trim()));
+
+  let displayOptions;
+  if (!isImageNumbered && AppState.shuffleOptions) {
+    displayOptions = shuffled(q.options.map((opt, origIdx) => ({ opt, origIdx, isCorrect: origIdx === q.correct })));
+  } else {
+    displayOptions = q.options.map((opt, origIdx) => ({ opt, origIdx, isCorrect: origIdx === q.correct }));
+  }
+  window.S.currentDisplayOptions = displayOptions;
+
   window.S.host.innerHTML = `
     <div class="q-header">
       <div class="q-badges">
@@ -113,13 +124,13 @@ function renderQ() {
         ${q.credit ? `<div class="credit">${esc(q.credit)}</div>` : ""}</div>` : ""}
 
     <div class="options">
-      ${q.options.map((o, i) => {
-        const oSub = resolveSubText(o);
+      ${displayOptions.map((item, i) => {
+        const oSub = resolveSubText(item.opt);
         return `
           <button class="opt" data-i="${i}">
             <span class="key">${LETTERS[i]}</span>
             <div class="opt-content">
-              <span class="label">${esc(o.de)}</span>
+              <span class="label">${esc(item.opt.de)}</span>
               ${oSub ? `<span class="opt-sub ${AppState.lang}">${esc(oSub)}</span>` : ""}
             </div>
             <span class="mark"></span>
@@ -169,22 +180,28 @@ function pick(i) {
   if (!window.S || window.S.answered) return;
   window.S.answered = true;
   const q = window.S.list[window.S.pos];
-  const ok = i === q.correct;
-  window.S.results.push({ id: q.id, picked: i, ok });
+  const displayOptions = window.S.currentDisplayOptions || q.options.map((opt, origIdx) => ({ opt, origIdx, isCorrect: origIdx === q.correct }));
+  
+  const chosen = displayOptions[i];
+  const ok = chosen ? chosen.isCorrect : false;
+  window.S.results.push({ id: q.id, picked: chosen ? chosen.origIdx : i, ok });
 
   recordAnswer(q.id, ok);
 
+  const correctDisplayIdx = displayOptions.findIndex(d => d.isCorrect);
+
   window.S.host.querySelectorAll(".opt").forEach((b, j) => {
     b.disabled = true;
-    if (j === q.correct) { b.classList.add("correct"); b.querySelector(".mark").textContent = "✓"; }
-    else if (j === i)    { b.classList.add("wrong");   b.querySelector(".mark").textContent = "✗"; }
+    if (j === correctDisplayIdx) { b.classList.add("correct"); b.querySelector(".mark").textContent = "✓"; }
+    else if (j === i)            { b.classList.add("wrong");   b.querySelector(".mark").textContent = "✗"; }
   });
 
   const c = q.options[q.correct];
   const cSub = resolveSubText(c);
+  const correctLetter = LETTERS[correctDisplayIdx >= 0 ? correctDisplayIdx : q.correct];
   el("fb").innerHTML = `
     <div class="feedback ${ok ? "ok" : "no"}">
-      <h3>${ok ? "Richtig!" : `Falsch — richtig ist ${LETTERS[q.correct]}: ${esc(c.de)}`}</h3>
+      <h3>${ok ? "Richtig!" : `Falsch — richtig ist ${correctLetter}: ${esc(c.de)}`}</h3>
       ${cSub && !ok ? `<div class="sub ${AppState.lang}">Correct answer: ${esc(cSub)}</div>` : ""}
     </div>`;
 
