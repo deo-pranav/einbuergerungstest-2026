@@ -2,29 +2,96 @@
  * Modular Language Pack & Internationalization Engine
  * ================================================================== */
 
+// 100+ World Languages supported by open translation API
+window.WORLD_LANGUAGES = [
+  { code: "ar", name: "Arabisch", native: "العربية", flag: "🇸🇾" },
+  { code: "tr", name: "Türkisch", native: "Türkçe", flag: "🇹🇷" },
+  { code: "ps", name: "Paschtu", native: "پښتو", flag: "🇦🇫" },
+  { code: "prs", name: "Dari", native: "دری", flag: "🇦🇫" },
+  { code: "fa", name: "Persisch / Farsi", native: "فارسی", flag: "🇮🇷" },
+  { code: "uk", name: "Ukrainisch", native: "Українська", flag: "🇺🇦" },
+  { code: "ru", name: "Russisch", native: "Русский", flag: "🇷🇺" },
+  { code: "hi", name: "Hindi", native: "हिन्दी", flag: "🇮🇳" },
+  { code: "ur", name: "Urdu", native: "اردو", flag: "🇵🇰" },
+  { code: "ku", name: "Kurdisch (Kurmandschi)", native: "Kurdî", flag: "☀️" },
+  { code: "ckb", name: "Kurdisch (Sorani)", native: "کوردی", flag: "☀️" },
+  { code: "ti", name: "Tigrinya", native: "ትግርኛ", flag: "🇪🇷" },
+  { code: "am", name: "Amharisch", native: "አማርኛ", flag: "🇪🇹" },
+  { code: "so", name: "Somali", native: "Soomaali", flag: "🇸🇴" },
+  { code: "sq", name: "Albanisch", native: "Shqip", flag: "🇦🇱" },
+  { code: "sr", name: "Serbisch", native: "Српски", flag: "🇷🇸" },
+  { code: "bs", name: "Bosnisch", native: "Bosanski", flag: "🇧🇦" },
+  { code: "hr", name: "Kroatisch", native: "Hrvatski", flag: "🇭🇷" },
+  { code: "ro", name: "Rumänisch", native: "Română", flag: "🇷🇴" },
+  { code: "bg", name: "Bulgarisch", native: "Български", flag: "🇧🇬" },
+  { code: "pl", name: "Polnisch", native: "Polski", flag: "🇵🇱" },
+  { code: "hu", name: "Ungarisch", native: "Magyar", flag: "🇭🇺" },
+  { code: "cs", name: "Tschechisch", native: "Čeština", flag: "🇨🇿" },
+  { code: "sk", name: "Slowakisch", native: "Slovenčina", flag: "🇸🇰" },
+  { code: "el", name: "Griechisch", native: "Ελληνικά", flag: "🇬🇷" },
+  { code: "es", name: "Spanisch", native: "Español", flag: "🇪🇸" },
+  { code: "fr", name: "Französisch", native: "Français", flag: "🇫🇷" },
+  { code: "it", name: "Italienisch", native: "Italiano", flag: "🇮🇹" },
+  { code: "pt", name: "Portugiesisch", native: "Português", flag: "🇵🇹" },
+  { code: "nl", name: "Niederländisch", native: "Nederlands", flag: "🇳🇱" },
+  { code: "vi", name: "Vietnamesisch", native: "Tiếng Việt", flag: "🇻🇳" },
+  { code: "zh", name: "Chinesisch (Vereinfacht)", native: "简体中文", flag: "🇨🇳" },
+  { code: "zh-TW", name: "Chinesisch (Traditionell)", native: "繁體中文", flag: "🇹🇼" },
+  { code: "ja", name: "Japanisch", native: "日本語", flag: "🇯🇵" },
+  { code: "ko", name: "Koreanisch", native: "한국어", flag: "🇰🇷" },
+  { code: "bn", name: "Bengalisch", native: "বাংলা", flag: "🇧🇩" },
+  { code: "pa", name: "Punjabi", native: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
+  { code: "ta", name: "Tamil", native: "தமிழ்", flag: "🇮🇳" },
+  { code: "te", name: "Telugu", native: "తెలుగు", flag: "🇮🇳" },
+  { code: "ml", name: "Malayalam", native: "മലയാളം", flag: "🇮🇳" },
+  { code: "gu", name: "Gujarati", native: "ગુજરાતી", flag: "🇮🇳" },
+  { code: "mr", name: "Marathi", native: "मराठी", flag: "🇮🇳" },
+  { code: "ne", name: "Nepalesisch", native: "नेपाली", flag: "🇳🇵" },
+  { code: "si", name: "Singhalesisch", native: "සිංහල", flag: "🇱🇰" },
+  { code: "th", name: "Thailändisch", native: "ไทย", flag: "🇹🇭" },
+  { code: "id", name: "Indonesisch", native: "Bahasa Indonesia", flag: "🇮🇩" },
+  { code: "ms", name: "Malaiisch", native: "Bahasa Melayu", flag: "🇲🇾" },
+  { code: "tl", name: "Tagalog / Filipino", native: "Filipino", flag: "🇵🇭" },
+  { code: "my", name: "Birmanisch", native: "မြန်မာ", flag: "🇲🇲" },
+  { code: "km", name: "Khmer", native: "ភាសាខ្មែរ", flag: "🇰🇭" },
+  { code: "he", name: "Hebräisch", native: "עברית", flag: "🇮🇱" },
+  { code: "hy", name: "Armenisch", native: "Հայերեն", flag: "🇦🇲" },
+  { code: "ka", name: "Georgisch", native: "ქართული", flag: "🇬🇪" },
+  { code: "az", name: "Aserbaidschanisch", native: "Azərbaycan", flag: "🇦🇿" },
+  { code: "kk", name: "Kasachisch", native: "Қазақша", flag: "🇰🇿" },
+  { code: "uz", name: "Usbekisch", native: "Oʻzbekcha", flag: "🇺🇿" },
+  { code: "tg", name: "Tadschikisch", native: "Тоҷикӣ", flag: "🇹🇯" },
+  { code: "tk", name: "Turkmenisch", native: "Türkmençe", flag: "🇹🇲" },
+  { code: "ky", name: "Kirgisisch", native: "Кыргызча", flag: "🇰🇬" },
+  { code: "mn", name: "Mongolisch", native: "Монгол", flag: "🇲🇳" },
+  { code: "sw", name: "Swahili", native: "Kiswahili", flag: "🇰🇪" },
+  { code: "yo", name: "Yoruba", native: "Èdè Yorùbá", flag: "🇳🇬" },
+  { code: "ig", name: "Igbo", native: "Asụsụ Igbo", flag: "🇳🇬" },
+  { code: "ha", name: "Haussa", native: "Hausa", flag: "🇳🇬" },
+  { code: "om", name: "Oromo", native: "Afaan Oromoo", flag: "🇪🇹" },
+  { code: "rw", name: "Kinyarwanda", native: "Ikinyarwanda", flag: "🇷🇼" },
+  { code: "sv", name: "Schwedisch", native: "Svenska", flag: "🇸🇪" },
+  { code: "da", name: "Dänisch", native: "Dansk", flag: "🇩🇰" },
+  { code: "no", name: "Norwegisch", native: "Norsk", flag: "🇳🇴" },
+  { code: "fi", name: "Finnisch", native: "Suomi", flag: "🇫🇮" },
+  { code: "et", name: "Estnisch", native: "Eesti", flag: "🇪🇪" },
+  { code: "lv", name: "Lettisch", native: "Latviešu", flag: "🇱🇻" },
+  { code: "lt", name: "Litauisch", native: "Lietuvių", flag: "🇱🇹" },
+  { code: "sl", name: "Slowenisch", native: "Slovenščina", flag: "🇸🇮" },
+  { code: "mk", name: "Mazedonisch", native: "Македонски", flag: "🇲🇰" }
+];
+
 window.PackFilter = {
   query: "",
-  tab: "all" // "all", "installed", "available"
+  tab: "all" // "all", "installed", "available", "online"
 };
 
 window.PackState = {
-  registry: window.LANGUAGE_PACKS_REGISTRY || [
-    { code: "en", name: "Englisch", native: "English", flag: "🇬🇧", file: "data/packs/en.json", jsFile: "data/packs/en.js", size: "90 KB" },
-    { code: "hi", name: "Hindi", native: "हिन्दी", flag: "🇮🇳", file: "data/packs/hi.json", jsFile: "data/packs/hi.js", size: "177 KB" },
-    { code: "tr", name: "Türkisch", native: "Türkçe", flag: "🇹🇷", file: "data/packs/tr.json", jsFile: "data/packs/tr.js", size: "95 KB" },
-    { code: "ar", name: "Arabisch", native: "العربية", flag: "🇸🇾", file: "data/packs/ar.json", jsFile: "data/packs/ar.js", size: "125 KB" },
-    { code: "uk", name: "Ukrainisch", native: "Українська", flag: "🇺🇦", file: "data/packs/uk.json", jsFile: "data/packs/uk.js", size: "138 KB" },
-    { code: "ru", name: "Russisch", native: "Русский", flag: "🇷🇺", file: "data/packs/ru.json", jsFile: "data/packs/ru.js", size: "135 KB" },
-    { code: "fa", name: "Persisch / Farsi", native: "فارسی", flag: "🇮🇷", file: "data/packs/fa.json", jsFile: "data/packs/fa.js", size: "120 KB" },
-    { code: "es", name: "Spanisch", native: "Español", flag: "🇪🇸", file: "data/packs/es.json", jsFile: "data/packs/es.js", size: "95 KB" },
-    { code: "fr", name: "Französisch", native: "Français", flag: "🇫🇷", file: "data/packs/fr.json", jsFile: "data/packs/fr.js", size: "98 KB" },
-    { code: "pl", name: "Polnisch", native: "Polski", flag: "🇵🇱", file: "data/packs/pl.json", jsFile: "data/packs/pl.js", size: "98 KB" },
-    { code: "it", name: "Italienisch", native: "Italiano", flag: "🇮🇹", file: "data/packs/it.json", jsFile: "data/packs/it.js", size: "95 KB" },
-    { code: "vi", name: "Vietnamesisch", native: "Tiếng Việt", flag: "🇻🇳", file: "data/packs/vi.json", jsFile: "data/packs/vi.js", size: "105 KB" }
-  ],
+  registry: window.LANGUAGE_PACKS_REGISTRY || [],
   installed: new Set(window.store ? window.store.get("et.installedPacks", ["en"]) : ["en"]),
   cache: {},
-  loading: {}
+  loading: {},
+  isGeneratingOnline: false
 };
 
 // Global hook for script-injected packs
@@ -98,7 +165,13 @@ window.loadLanguagePack = function(langCode, callback) {
   }
 
   const reg = window.PackState.registry.find(p => p.code === langCode);
-  if (!reg) {
+  if (!reg || !reg.file) {
+    // Check if it's in world languages and can be generated online
+    const worldLang = window.WORLD_LANGUAGES.find(w => w.code === langCode);
+    if (worldLang) {
+      window.generateLanguagePackOnline(worldLang.code, worldLang.name, worldLang.native, worldLang.flag, null, callback);
+      return;
+    }
     if (callback) callback(false, new Error("Unbekanntes Sprachpaket"));
     return;
   }
@@ -143,6 +216,7 @@ window.deleteLanguagePack = function(langCode) {
   if (window.AppState.lang === langCode) {
     window.setLanguage("de");
   }
+  window.updateLanguageUI();
   window.renderLanguagePackModal();
 };
 
@@ -168,6 +242,12 @@ window.setLanguage = function(lang) {
 
   window.AppState.lang = lang;
   window.store.set("et.lang", window.AppState.lang);
+  
+  if (lang !== "de" && lang !== "en") {
+    window.AppState.lastCustomLang = lang;
+    window.store.set("et.lastCustomLang", lang);
+  }
+
   window.updateLanguageUI();
 
   if (window.S) {
@@ -178,10 +258,156 @@ window.setLanguage = function(lang) {
   }
 };
 
+// Dynamic Header Language Switcher: [DE] [+ EN] [+ {Selected Custom Lang}] [🌐]
 window.updateLanguageUI = function() {
-  document.querySelectorAll(".lang-btn").forEach(btn => {
-    btn.setAttribute("aria-pressed", String(btn.dataset.lang === window.AppState.lang));
+  const container = window.el("lang-switcher");
+  if (!container) return;
+
+  const curLang = window.AppState.lang;
+  const customCode = (curLang !== "de" && curLang !== "en") ? curLang : (window.AppState.lastCustomLang || "ar");
+  
+  // Find custom pack meta
+  let customMeta = window.PackState.registry.find(p => p.code === customCode);
+  if (!customMeta) {
+    customMeta = window.WORLD_LANGUAGES.find(w => w.code === customCode) || { code: customCode, name: customCode.toUpperCase(), flag: "🌐" };
+  }
+
+  const customActive = (curLang === customCode);
+  const customLabel = `+ ${customMeta.flag || ""} ${customMeta.code.toUpperCase()}`;
+  const customTitle = `Deutsch + ${customMeta.name || customMeta.native || customMeta.code.toUpperCase()}`;
+
+  container.innerHTML = `
+    <button class="lang-btn" data-lang="de" aria-pressed="${curLang === 'de'}" title="Nur Deutsch (Offizieller Prüfungsmodus)">DE</button>
+    <button class="lang-btn" data-lang="en" aria-pressed="${curLang === 'en'}" title="Deutsch + English">+ EN</button>
+    <button class="lang-btn" data-lang="${window.esc(customCode)}" aria-pressed="${customActive}" title="${window.esc(customTitle)}">${window.esc(customLabel)}</button>
+    <button class="ctrl-btn" id="lang-packs-btn" title="Sprachpakete verwalten / Online-Datenbank suchen" aria-label="Sprachpakete verwalten" style="padding:2px 8px;font-size:0.85rem">🌐</button>
+  `;
+
+  // Bind click handlers
+  container.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.addEventListener("click", () => window.setLanguage(btn.dataset.lang));
   });
+
+  const langPacksBtn = window.el("lang-packs-btn");
+  if (langPacksBtn) {
+    langPacksBtn.addEventListener("click", () => window.openLanguagePackModal());
+  }
+};
+
+// Online Translation Engine for Any World Language
+window.translateSingleTextOnline = async function(text, targetLang) {
+  if (!text || !text.trim() || !isNaN(text.trim())) return text;
+  const url = `https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=de&tl=${encodeURIComponent(targetLang)}&dt=t&q=${encodeURIComponent(text)}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("HTTP error " + res.status);
+    const data = await res.json();
+    return data[0].map(s => s[0]).join("");
+  } catch (err) {
+    return text;
+  }
+};
+
+window.generateLanguagePackOnline = async function(langCode, langName, langNative, langFlag, onProgress, onDone) {
+  if (window.PackState.isGeneratingOnline) {
+    alert("Ein Übersetzungsvorgang läuft bereits. Bitte kurz warten …");
+    return;
+  }
+
+  window.PackState.isGeneratingOnline = true;
+  window.renderProgressModal(`Sprachpaket „${langName} (${langNative})“ wird online generiert …`);
+
+  const questions = window.ALL_QS || [];
+  const packData = {};
+  const total = questions.length;
+  let finished = 0;
+
+  const updateModalProgress = () => {
+    const pct = Math.round(finished / total * 100);
+    const bar = window.el("gen-progress-fill");
+    const label = window.el("gen-progress-label");
+    if (bar) bar.style.width = pct + "%";
+    if (label) label.textContent = `${pct}% — ${finished} von ${total} Fragen übersetzt …`;
+  };
+
+  try {
+    // Process in batches of 10 concurrent requests
+    const BATCH_SIZE = 10;
+    for (let i = 0; i < total; i += BATCH_SIZE) {
+      const slice = questions.slice(i, i + BATCH_SIZE);
+      await Promise.all(slice.map(async q => {
+        const qDe = typeof q.q === "object" ? q.q.de : q.q;
+        const qTrans = await window.translateSingleTextOnline(qDe, langCode);
+        const optTrans = await Promise.all(q.options.map(o => {
+          const oDe = typeof o === "object" ? o.de : o;
+          return window.translateSingleTextOnline(oDe, langCode);
+        }));
+        packData[String(q.id)] = { q: qTrans, options: optTrans };
+        finished++;
+        updateModalProgress();
+      }));
+    }
+
+    // Save pack locally
+    window.REGISTER_LANGUAGE_PACK(langCode, packData);
+
+    // Add / update registry
+    let existingReg = window.PackState.registry.find(p => p.code === langCode);
+    if (!existingReg) {
+      existingReg = {
+        code: langCode,
+        name: langName,
+        native: langNative,
+        flag: langFlag || "🌐",
+        file: "",
+        jsFile: "",
+        size: `${Math.round(JSON.stringify(packData).length / 1024)} KB`,
+        count: total
+      };
+      window.PackState.registry.push(existingReg);
+    }
+
+    window.closeProgressModal();
+    window.PackState.isGeneratingOnline = false;
+    window.setLanguage(langCode);
+    alert(`Sprachpaket „${langName} (${langNative})“ erfolgreich generiert & 100% offline gespeichert!`);
+    window.renderLanguagePackModal();
+    if (onDone) onDone(true);
+  } catch (err) {
+    window.closeProgressModal();
+    window.PackState.isGeneratingOnline = false;
+    alert("Fehler bei der Online-Generierung: " + err.message);
+    if (onDone) onDone(false, err);
+  }
+};
+
+window.renderProgressModal = function(title) {
+  let modal = window.el("gen-progress-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "gen-progress-modal";
+    modal.className = "modal-overlay";
+    document.body.appendChild(modal);
+  }
+  modal.hidden = false;
+  modal.innerHTML = `
+    <div class="modal-dialog" style="max-width:440px;text-align:center">
+      <div style="font-size:2.4rem;margin-bottom:8px">⚡</div>
+      <h3 style="margin:0 0 8px 0">${window.esc(title)}</h3>
+      <p class="lead" style="font-size:0.85rem;margin-bottom:16px;color:var(--muted)">
+        Fragen und Antworten werden übersetzt und auf Ihrem Gerät für Offline-Nutzung gespeichert …
+      </p>
+      <div class="cat-progress-bar" style="height:12px;margin-bottom:8px">
+        <div class="cat-progress-fill" id="gen-progress-fill" style="width:0%"></div>
+      </div>
+      <div id="gen-progress-label" style="font-size:0.85rem;font-weight:600;color:var(--accent)">0% gestartet …</div>
+    </div>
+  `;
+};
+
+window.closeProgressModal = function() {
+  const modal = window.el("gen-progress-modal");
+  if (modal) modal.hidden = true;
 };
 
 window.openLanguagePackModal = function(targetLang) {
@@ -208,8 +434,8 @@ window.renderLanguagePackModal = function(highlightLang) {
   const q = (window.PackFilter.query || "").trim().toLowerCase();
   const currentTab = window.PackFilter.tab || "all";
 
-  // Filter provider list
-  const filteredPacks = window.PackState.registry.filter(p => {
+  // 1. Filter local provider registry
+  const filteredLocal = window.PackState.registry.filter(p => {
     const installed = window.isPackInstalled(p.code);
     if (currentTab === "installed" && !installed) return false;
     if (currentTab === "available" && installed) return false;
@@ -219,33 +445,47 @@ window.renderLanguagePackModal = function(highlightLang) {
     return searchString.includes(q);
   });
 
-  const totalAvailable = window.PackState.registry.length;
+  // 2. Filter online world languages (when searching or on 'online' / 'all' tab)
+  const filteredOnline = (q || currentTab === "online") ? window.WORLD_LANGUAGES.filter(w => {
+    // Exclude if already in local registry and installed
+    if (window.isPackInstalled(w.code)) return false;
+    // Exclude if already pre-built in local registry
+    if (window.PackState.registry.some(p => p.code === w.code)) return false;
+
+    if (!q) return currentTab === "online";
+    const searchString = `${w.name} ${w.native} ${w.code}`.toLowerCase();
+    return searchString.includes(q);
+  }) : [];
+
   const totalInstalled = window.PackState.installed.size;
+  const totalLocal = window.PackState.registry.length;
+  const totalOnline = window.WORLD_LANGUAGES.length;
 
   modal.innerHTML = `
     <div class="modal-dialog">
       <div class="modal-header">
         <div>
           <h3 style="margin:0">🌐 Sprachpakete & Übersetzungen</h3>
-          <span style="font-size:0.8rem;color:var(--muted)">${totalAvailable} Sprachen vom Provider unterstützt · 100% Offline</span>
+          <span style="font-size:0.8rem;color:var(--muted)">100% Offline-fähig · Beliebige Sprache online generierbar</span>
         </div>
         <button class="ctrl-btn modal-close" id="modal-close-btn" title="Schließen">✕</button>
       </div>
 
       <div class="modal-body">
         <!-- Search input -->
-        <input type="search" id="pack-search-input" class="pack-search" placeholder="🔍 Sprachpaket suchen (z.B. Türkisch, Arabic, русский, Español) …" value="${window.esc(window.PackFilter.query)}">
+        <input type="search" id="pack-search-input" class="pack-search" placeholder="🔍 Online-Datenbank suchen (z.B. Arabisch, Kurdish, Somali, Polski, اردو, دری) …" value="${window.esc(window.PackFilter.query)}">
 
         <!-- Filter Chips -->
         <div class="pack-filters">
-          <button class="pack-chip ${currentTab === 'all' ? 'active' : ''}" data-tab="all">Alle (${totalAvailable})</button>
+          <button class="pack-chip ${currentTab === 'all' ? 'active' : ''}" data-tab="all">Alle (${totalLocal})</button>
           <button class="pack-chip ${currentTab === 'installed' ? 'active' : ''}" data-tab="installed">Installiert (${totalInstalled})</button>
-          <button class="pack-chip ${currentTab === 'available' ? 'active' : ''}" data-tab="available">Verfügbar (${totalAvailable - totalInstalled})</button>
+          <button class="pack-chip ${currentTab === 'available' ? 'active' : ''}" data-tab="available">Pre-Built (${totalLocal - totalInstalled})</button>
+          <button class="pack-chip ${currentTab === 'online' ? 'active' : ''}" data-tab="online">⚡ Online-Datenbank (100+)</button>
         </div>
 
         <div class="pack-list">
           <!-- German Base (Only shown on 'all' or 'installed' when not searching or matching 'deutsch') -->
-          ${(currentTab !== 'available' && (!q || 'deutsch german de'.includes(q))) ? `
+          ${(currentTab !== 'available' && currentTab !== 'online' && (!q || 'deutsch german de'.includes(q))) ? `
           <div class="pack-card active-base">
             <div class="pack-info">
               <span class="pack-flag">🇩🇪</span>
@@ -261,8 +501,8 @@ window.renderLanguagePackModal = function(highlightLang) {
             </div>
           </div>` : ''}
 
-          <!-- Downloadable Packs -->
-          ${filteredPacks.length ? filteredPacks.map(p => {
+          <!-- Downloadable Pre-Built Packs -->
+          ${filteredLocal.map(p => {
             const installed = window.isPackInstalled(p.code);
             const active = window.AppState.lang === p.code;
             const isHighlight = p.code === highlightLang && !installed;
@@ -272,7 +512,7 @@ window.renderLanguagePackModal = function(highlightLang) {
                   <span class="pack-flag">${p.flag}</span>
                   <div>
                     <b>${window.esc(p.name)} (${window.esc(p.native)})</b>
-                    <span class="pack-meta">${p.size} · 460 Fragen übersetzt</span>
+                    <span class="pack-meta">${p.size} · 460 Fragen übersetzt · Pre-built</span>
                   </div>
                 </div>
                 <div class="pack-action">
@@ -288,11 +528,32 @@ window.renderLanguagePackModal = function(highlightLang) {
                   `}
                 </div>
               </div>`;
-          }).join("") : `
+          }).join("")}
+
+          <!-- Online World Languages (On-Demand Generation) -->
+          ${filteredOnline.map(w => {
+            return `
+              <div class="pack-card" style="border-style:dashed">
+                <div class="pack-info">
+                  <span class="pack-flag">${w.flag}</span>
+                  <div>
+                    <b>${window.esc(w.name)} (${window.esc(w.native)})</b>
+                    <span class="pack-meta">Online-Datenbank · ⚡ Auto-Translate auf Knopfdruck</span>
+                  </div>
+                </div>
+                <div class="pack-action">
+                  <button class="btn btn-sm" data-gen-online="${w.code}" data-name="${window.esc(w.name)}" data-native="${window.esc(w.native)}" data-flag="${w.flag}">
+                    ⚡ Online erstellen
+                  </button>
+                </div>
+              </div>`;
+          }).join("")}
+
+          ${(!filteredLocal.length && !filteredOnline.length) ? `
             <div style="text-align:center;padding:24px;color:var(--muted)">
-              Kein Sprachpaket für „${window.esc(window.PackFilter.query)}“ im Katalog gefunden.
+              Kein passendes Sprachpaket für „${window.esc(window.PackFilter.query)}“ gefunden.
             </div>
-          `}
+          ` : ''}
         </div>
 
         <!-- Custom Importer Box -->
@@ -373,6 +634,17 @@ window.renderLanguagePackModal = function(highlightLang) {
     };
   });
 
+  // Online generation button handler
+  modal.querySelectorAll("[data-gen-online]").forEach(btn => {
+    btn.onclick = () => {
+      const code = btn.dataset.genOnline;
+      const name = btn.dataset.name;
+      const native = btn.dataset.native;
+      const flag = btn.dataset.flag;
+      window.generateLanguagePackOnline(code, name, native, flag);
+    };
+  });
+
   // Custom JSON Pack Import
   const importInput = window.el("btn-import-pack");
   if (importInput) {
@@ -386,7 +658,6 @@ window.renderLanguagePackModal = function(highlightLang) {
           const langCode = file.name.replace(/\.json$/i, "").toLowerCase().slice(0, 10);
           window.REGISTER_LANGUAGE_PACK(langCode, packData);
           
-          // Add to registry if not present
           if (!window.PackState.registry.some(p => p.code === langCode)) {
             window.PackState.registry.push({
               code: langCode,

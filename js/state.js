@@ -44,6 +44,7 @@ window.AppState = {
   history: window.store.get("et.history", {}),           // { [id]: { right: 0, wrong: 0, streak: 0, last: 0 } }
   examHistory: window.store.get("et.examHistory", []),   // [ { id, date, score, total, pass, stateCode, duration } ]
   lastMissed: window.store.get("et.lastMissed", []),     // [ qids missed in last exam ]
+  lastCustomLang: window.store.get("et.lastCustomLang", "ar"), // Last selected non-de/en language
   shuffleQuestions: window.store.get("et.shuffleQuestions", true),
   shuffleOptions: window.store.get("et.shuffleOptions", true)
 };
