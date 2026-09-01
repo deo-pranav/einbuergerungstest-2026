@@ -46,7 +46,7 @@ window.LANGUAGE_PACKS_REGISTRY = [
     "flag": "🇺🇦",
     "file": "data/packs/uk.json",
     "jsFile": "data/packs/uk.js",
-    "size": "138 KB",
+    "size": "137 KB",
     "count": 460
   },
   {
@@ -76,6 +76,46 @@ window.LANGUAGE_PACKS_REGISTRY = [
     "flag": "🇪🇸",
     "file": "data/packs/es.json",
     "jsFile": "data/packs/es.js",
+    "size": "93 KB",
+    "count": 460
+  },
+  {
+    "code": "fr",
+    "name": "Französisch",
+    "native": "Français",
+    "flag": "🇫🇷",
+    "file": "data/packs/fr.json",
+    "jsFile": "data/packs/fr.js",
+    "size": "93 KB",
+    "count": 460
+  },
+  {
+    "code": "pl",
+    "name": "Polnisch",
+    "native": "Polski",
+    "flag": "🇵🇱",
+    "file": "data/packs/pl.json",
+    "jsFile": "data/packs/pl.js",
+    "size": "93 KB",
+    "count": 460
+  },
+  {
+    "code": "it",
+    "name": "Italienisch",
+    "native": "Italiano",
+    "flag": "🇮🇹",
+    "file": "data/packs/it.json",
+    "jsFile": "data/packs/it.js",
+    "size": "93 KB",
+    "count": 460
+  },
+  {
+    "code": "vi",
+    "name": "Vietnamesisch",
+    "native": "Tiếng Việt",
+    "flag": "🇻🇳",
+    "file": "data/packs/vi.json",
+    "jsFile": "data/packs/vi.js",
     "size": "93 KB",
     "count": 460
   }

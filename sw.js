@@ -38,6 +38,14 @@ const STATIC_ASSETS = [
   './data/packs/fa.js',
   './data/packs/es.json',
   './data/packs/es.js',
+  './data/packs/fr.json',
+  './data/packs/fr.js',
+  './data/packs/pl.json',
+  './data/packs/pl.js',
+  './data/packs/it.json',
+  './data/packs/it.js',
+  './data/packs/vi.json',
+  './data/packs/vi.js',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
