@@ -118,5 +118,25 @@ window.LANGUAGE_PACKS_REGISTRY = [
     "jsFile": "data/packs/vi.js",
     "size": "93 KB",
     "count": 460
+  },
+  {
+    "code": "ps",
+    "name": "Paschtu",
+    "native": "پښتو",
+    "flag": "🇦🇫",
+    "file": "data/packs/ps.json",
+    "jsFile": "data/packs/ps.js",
+    "size": "122 KB",
+    "count": 460
+  },
+  {
+    "code": "prs",
+    "name": "Dari",
+    "native": "دری",
+    "flag": "🇦🇫",
+    "file": "data/packs/prs.json",
+    "jsFile": "data/packs/prs.js",
+    "size": "118 KB",
+    "count": 460
   }
 ];

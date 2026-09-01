@@ -46,6 +46,10 @@ const STATIC_ASSETS = [
   './data/packs/it.js',
   './data/packs/vi.json',
   './data/packs/vi.js',
+  './data/packs/ps.json',
+  './data/packs/ps.js',
+  './data/packs/prs.json',
+  './data/packs/prs.js',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
