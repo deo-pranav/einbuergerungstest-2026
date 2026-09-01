@@ -89,14 +89,18 @@ function renderQ() {
   paintProgress();
 
   const isStarred = AppState.bookmarks.has(q.id);
-  const qSub = resolveSubText(q.q);
+  const qDe = typeof q.q === "object" ? q.q.de : q.q;
+  const qSub = resolveQuestionSubText(q);
   const curStateObj = STATES.find(s => s.code === q.state);
   const badge = q.state
     ? `Landesfrage ${curStateObj ? curStateObj.name : q.state} · Nr. ${q.id}`
     : `Bundesweite Frage · Nr. ${q.id}`;
 
   // Check if options are numbered image references (Bild 1..4 or 1..4)
-  const isImageNumbered = q.options.every(o => /^(bild\s*)?[1-4]$/i.test((o.de || "").trim()));
+  const isImageNumbered = q.options.every(o => {
+    const txt = typeof o === "object" ? o.de : o;
+    return /^(bild\s*)?[1-4]$/i.test((txt || "").trim());
+  });
 
   let displayOptions;
   if (!isImageNumbered && AppState.shuffleOptions) {
@@ -117,7 +121,7 @@ function renderQ() {
       </button>
     </div>
 
-    <p class="qtext">${esc(q.q.de)}</p>
+    <p class="qtext">${esc(qDe)}</p>
     ${qSub ? `<p class="qtext-sub ${AppState.lang}">${esc(qSub)}</p>` : ""}
 
     ${q.image ? `<div class="qimg"><img src="${esc(q.image)}" alt="Abbildung zu Frage ${q.id}">
@@ -125,12 +129,13 @@ function renderQ() {
 
     <div class="options">
       ${displayOptions.map((item, i) => {
-        const oSub = resolveSubText(item.opt);
+        const oDe = typeof item.opt === "object" ? item.opt.de : item.opt;
+        const oSub = resolveOptionSubText(q, item.origIdx);
         return `
           <button class="opt" data-i="${i}">
             <span class="key">${LETTERS[i]}</span>
             <div class="opt-content">
-              <span class="label">${esc(item.opt.de)}</span>
+              <span class="label">${esc(oDe)}</span>
               ${oSub ? `<span class="opt-sub ${AppState.lang}">${esc(oSub)}</span>` : ""}
             </div>
             <span class="mark"></span>
@@ -197,11 +202,12 @@ function pick(i) {
   });
 
   const c = q.options[q.correct];
-  const cSub = resolveSubText(c);
+  const cDe = typeof c === "object" ? c.de : c;
+  const cSub = resolveOptionSubText(q, q.correct);
   const correctLetter = LETTERS[correctDisplayIdx >= 0 ? correctDisplayIdx : q.correct];
   el("fb").innerHTML = `
     <div class="feedback ${ok ? "ok" : "no"}">
-      <h3>${ok ? "Richtig!" : `Falsch — richtig ist ${correctLetter}: ${esc(c.de)}`}</h3>
+      <h3>${ok ? "Richtig!" : `Falsch — richtig ist ${correctLetter}: ${esc(cDe)}`}</h3>
       ${cSub && !ok ? `<div class="sub ${AppState.lang}">Correct answer: ${esc(cSub)}</div>` : ""}
     </div>`;
 
@@ -247,13 +253,15 @@ function renderResult() {
       <ul class="misses">
         ${wrong.map(r => {
           const q = ALL_QS.find(x => x.id === r.id);
+          const qDe = typeof q.q === "object" ? q.q.de : q.q;
           const c = q.options[q.correct];
-          const qSub = resolveSubText(q.q);
-          const cSub = resolveSubText(c);
+          const cDe = typeof c === "object" ? c.de : c;
+          const qSub = resolveQuestionSubText(q);
+          const cSub = resolveOptionSubText(q, q.correct);
           return `<li>
-            Nr. ${q.id} — ${esc(q.q.de)}
+            Nr. ${q.id} — ${esc(qDe)}
             ${qSub ? `<div class="table-sub ${AppState.lang}">${esc(qSub)}</div>` : ""}
-            <div style="margin-top:4px">Richtig: <b>${esc(c.de)}</b>${cSub ? ` <span class="table-sub ${AppState.lang}">(${esc(cSub)})</span>` : ""}</div>
+            <div style="margin-top:4px">Richtig: <b>${esc(cDe)}</b>${cSub ? ` <span class="table-sub ${AppState.lang}">(${esc(cSub)})</span>` : ""}</div>
           </li>`;
         }).join("")}
       </ul>` : `<p style="text-align:center;color:var(--muted);margin-top:16px">Alles richtig! Ausgezeichnet.</p>`}

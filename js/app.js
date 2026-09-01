@@ -47,6 +47,13 @@ function initControls() {
     btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
   });
 
+  const langPacksBtn = el("lang-packs-btn");
+  if (langPacksBtn) {
+    langPacksBtn.addEventListener("click", () => openLanguagePackModal());
+  }
+
+  initLanguagePacks();
+
   // Tab buttons
   document.querySelectorAll("nav.tabs button").forEach(btn => {
     btn.addEventListener("click", () => selectTab(btn.dataset.view));

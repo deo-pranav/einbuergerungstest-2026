@@ -18,8 +18,14 @@ const STATIC_ASSETS = [
   './js/views/table.js',
   './js/views/stats.js',
   './js/app.js',
-  './data/questions_all.js',
-  './data/questions_all.json',
+  './data/packs/registry.js',
+  './data/packs/registry.json',
+  './data/questions_core.js',
+  './data/questions_core.json',
+  './data/packs/en.json',
+  './data/packs/en.js',
+  './data/packs/hi.json',
+  './data/packs/hi.js',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];

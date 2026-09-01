@@ -10,8 +10,8 @@ function renderTable() {
   const poolEl = el("q-filter-pool");
   const countEl = el("all-count");
 
-  const term = (searchEl ? searchEl.value : "").trim().toLowerCase();
-  const filterPool = poolEl ? poolEl.value : "all";
+  const term = (searchEl && searchEl.value ? searchEl.value : "").trim().toLowerCase();
+  const filterPool = (poolEl && poolEl.value ? poolEl.value : "all");
 
   const rows = ALL_QS.filter(q => {
     if (filterPool === "allgemein" && q.state !== null) return false;
@@ -23,30 +23,40 @@ function renderTable() {
 
     if (!term) return true;
 
+    const qDe = typeof q.q === "object" ? q.q.de : q.q;
     const c = q.options[q.correct];
-    const searchTarget = [
-      q.id,
-      q.q.de, q.q.en, q.q.hi,
-      ...q.options.map(o => `${o.de} ${o.en} ${o.hi}`),
-      c.de, c.en, c.hi
-    ].join(" ").toLowerCase();
+    const cDe = typeof c === "object" ? c.de : c;
+    const qSub = resolveQuestionSubText(q);
+    const cSub = resolveOptionSubText(q, q.correct);
 
-    return searchTarget.includes(term);
+    const searchTokens = [
+      q.id,
+      qDe,
+      qSub,
+      cDe,
+      cSub,
+      ...q.options.map((o, idx) => (typeof o === "object" ? o.de : o) + " " + resolveOptionSubText(q, idx))
+    ];
+
+    return searchTokens.join(" ").toLowerCase().includes(term);
   });
 
   tbodyEl.innerHTML = rows.length ? rows.map(q => {
+    const qDe = typeof q.q === "object" ? q.q.de : q.q;
     const c = q.options[q.correct];
-    const qSub = resolveSubText(q.q);
-    const cSub = resolveSubText(c);
+    const cDe = typeof c === "object" ? c.de : c;
+    const qSub = resolveQuestionSubText(q);
+    const cSub = resolveOptionSubText(q, q.correct);
+
     return `<tr>
       <td class="n">${q.id}${q.state ? `<br><span class="cat-tag" style="font-size:0.65rem">${q.state}</span>` : ""}</td>
       <td class="q-cell">
-        ${esc(q.q.de)}
+        ${esc(qDe)}
         ${q.image ? `<span class="cat-tag">[Bild]</span>` : ""}
         ${qSub ? `<div class="table-sub ${AppState.lang}">${esc(qSub)}</div>` : ""}
       </td>
       <td class="a">
-        ${esc(c.de)}
+        ${esc(cDe)}
         ${cSub ? `<div class="table-sub ${AppState.lang}">${esc(cSub)}</div>` : ""}
       </td>
     </tr>`;

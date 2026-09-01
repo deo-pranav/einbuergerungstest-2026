@@ -593,6 +593,110 @@ table.all td.a { color: var(--good); font-weight: 600; width: 35%; }
 
 .backup-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 
+/* Language Pack Manager Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.modal-dialog {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  padding: 22px;
+  animation: modalPop 0.18s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-header h3 { margin: 0; font-size: 1.25rem; }
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pack-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pack-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  gap: 12px;
+  transition: border-color 0.2s;
+}
+
+.pack-card.active-pack, .pack-card.active-base {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+}
+
+.pack-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pack-flag {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.pack-meta {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.pack-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 6px 12px !important;
+  font-size: 0.82rem !important;
+}
+
 footer {
   border-top: 1px solid var(--line);
   padding: 18px 20px 40px;

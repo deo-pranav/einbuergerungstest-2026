@@ -1,0 +1,22 @@
+[
+  {
+    "code": "en",
+    "name": "Englisch",
+    "native": "English",
+    "flag": "🇬🇧",
+    "file": "data/packs/en.json",
+    "jsFile": "data/packs/en.js",
+    "size": "91 KB",
+    "count": 460
+  },
+  {
+    "code": "hi",
+    "name": "Hindi",
+    "native": "हिन्दी",
+    "flag": "🇮🇳",
+    "file": "data/packs/hi.json",
+    "jsFile": "data/packs/hi.js",
+    "size": "178 KB",
+    "count": 460
+  }
+]
